@@ -481,7 +481,6 @@ public class RestClient {
    */
   private <H> HttpEntity<H> createHttpEntity(H entity, Map<String, String> headerParams) {
     HttpHeaders headers = new HttpHeaders();
-
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     if (headerParams != null) {
       for (Map.Entry<String, String> me : headerParams.entrySet()) {
