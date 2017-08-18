@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+// TODO CTPA-1503 Delete this class when we go back to master
 /**
  * A convenience class that wraps the Spring RestTemplate and eases its use
  * around the typing, headers, path and query params
