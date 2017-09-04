@@ -1,10 +1,13 @@
 package uk.gov.ons.ctp.common.util;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 import java.util.Optional;
 
 /**
  * Enum related Utilities
  */
+@CoverageIgnore
 public class EnumUtils {
 
   /**

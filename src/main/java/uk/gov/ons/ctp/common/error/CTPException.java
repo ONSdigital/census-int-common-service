@@ -1,12 +1,13 @@
 package uk.gov.ons.ctp.common.error;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import net.sourceforge.cobertura.CoverageIgnore;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * The CTP business exception.
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * meaningful message that the client will see. Or not. This message should not be displayed to end users through the
  * UI, but may be of use to developers and support staff using postman or reading logs.
  */
+@CoverageIgnore
 @JsonSerialize(using = CTPException.OurExceptionSerializer.class)
 public class CTPException extends Exception {
 

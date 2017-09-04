@@ -3,12 +3,14 @@ package uk.gov.ons.ctp.common.util;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 import java.util.UUID;
 
 /**
  * Bi-directional String to UUID Converter
  */
+@CoverageIgnore
 public class StringToUUIDConverter extends BidirectionalConverter<String, UUID> {
 
   /**

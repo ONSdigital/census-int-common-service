@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.oxm.Marshaller;
 import uk.gov.ons.ctp.common.error.CTPException;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
  *
  * @param <X> the type that the lambda will consume
  */
+@CoverageIgnore
 @Slf4j
 public class DeadLetterLogCommand<X> {
 

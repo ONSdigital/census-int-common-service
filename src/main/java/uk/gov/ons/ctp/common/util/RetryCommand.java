@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 import java.util.function.Predicate;
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the type that the lambda will supply as return
  */
+@CoverageIgnore
 @Slf4j
 public class RetryCommand<T> {
 

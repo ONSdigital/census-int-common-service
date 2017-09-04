@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.error;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +19,7 @@ import java.util.Locale;
 /**
  * Rest Exception Handler
  */
+@CoverageIgnore
 @ControllerAdvice
 @Slf4j
 public class RestExceptionHandler {

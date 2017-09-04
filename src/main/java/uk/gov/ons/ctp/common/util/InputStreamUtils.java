@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 /**
  * Class to collect together some useful InputStream manipulation methods
  */
+@CoverageIgnore
 @Slf4j
 public class InputStreamUtils {
   /**

@@ -1,9 +1,12 @@
 package uk.gov.ons.ctp.common.util;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 /**
  * Class to collect together some useful string manipulation methods
  *
  */
+@CoverageIgnore
 public class StringUtils {
 
   /**

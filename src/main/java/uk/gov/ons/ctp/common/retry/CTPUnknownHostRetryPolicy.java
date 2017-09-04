@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.retry;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.context.RetryContextSupport;
@@ -19,6 +20,7 @@ import java.util.List;
  * This RetryPolicy is used in our Spring Integration flows when picking up a message off a queue.
  *
  */
+@CoverageIgnore
 @Slf4j
 public class CTPUnknownHostRetryPolicy implements RetryPolicy {
 

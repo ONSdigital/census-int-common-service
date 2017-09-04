@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 // TODO CTPA-1503 Delete this class when we go back to master
 /**
  * Rest Client Configuration
  */
+@CoverageIgnore
 @Data
 @Builder
 @AllArgsConstructor

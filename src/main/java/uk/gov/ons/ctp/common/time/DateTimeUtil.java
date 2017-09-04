@@ -1,19 +1,22 @@
 package uk.gov.ons.ctp.common.time;
 
-import java.sql.Timestamp;
+import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Centralized DateTime handling for CTP
  *
  */
+@CoverageIgnore
 @Slf4j
 public class DateTimeUtil {
 
