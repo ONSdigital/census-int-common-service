@@ -10,7 +10,7 @@
   <description>CTP : Common Framework</description>
 
   <properties>
-    <commonbom.version>10.45.1/commonbom.version>
+    <commonbom.version>10.45.1</commonbom.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
