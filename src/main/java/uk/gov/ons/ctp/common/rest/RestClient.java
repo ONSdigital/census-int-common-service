@@ -208,11 +208,13 @@ public class RestClient {
       } catch (IOException e) {
         String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
         log.error(msg);
+        log.error("Stack trace: " + e);
         throw new RestClientException(msg);
       }
     } catch (CTPException e) {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
+      log.error("Stack trace: " + e);
       throw new RestClientException(msg);
     } finally {
     }
@@ -287,6 +289,7 @@ public class RestClient {
     } catch (CTPException e) {
       String msg = String.format("cause = %s - message = %s", e.getCause(), e.getMessage());
       log.error(msg);
+      log.error("Stack trace: " + e);
       throw new RestClientException(msg);
     }
     return responseList;

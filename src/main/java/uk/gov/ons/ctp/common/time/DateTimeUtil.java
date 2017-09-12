@@ -79,6 +79,7 @@ public class DateTimeUtil {
       result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     } catch (ParseException e) {
       log.error(String.format("%s - %s", e.getCause(), e.getMessage()));
+      log.error("Stack trace: " + e);
       result = DateTimeUtil.giveMeCalendarForNow();
     }
 

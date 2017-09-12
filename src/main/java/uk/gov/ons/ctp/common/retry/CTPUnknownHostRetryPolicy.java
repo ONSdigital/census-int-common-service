@@ -114,7 +114,8 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
                 }
             }
         } catch (ClassNotFoundException e) {
-            log.error("msg {} - cause {}", e.getMessage(), e.getCause());
+          log.error("msg {} - cause {}", e.getMessage(), e.getCause());
+          log.error("Stack trace: " + e);
         }
         return false;
     }
@@ -135,7 +136,8 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
                 }
             }
         } catch (ClassNotFoundException e) {
-            log.error("msg {} - cause {}", e.getMessage(), e.getCause());
+          log.error("msg {} - cause {}", e.getMessage(), e.getCause());
+          log.error("Stack trace: " + e);
         }
 
         return false;
