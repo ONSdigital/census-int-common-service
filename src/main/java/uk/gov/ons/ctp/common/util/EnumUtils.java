@@ -12,6 +12,7 @@ public class EnumUtils {
 
   /**
    * Gets optional Enum from String
+   * @param <T> type to use
    * @param enumClass Enum Class to use
    * @param value String to get from
    * @return Optional enum from string

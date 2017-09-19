@@ -1,18 +1,5 @@
 package uk.gov.ons.ctp.common.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -29,6 +16,20 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * Test the RestClient class
@@ -55,9 +56,9 @@ public class RestClientTest {
     mockServer.expect(requestTo("http://localhost:8080/hotels/42")).andExpect(new RequestMatcher() {
       @Override
       public void match(ClientHttpRequest request) throws IOException, AssertionError {
-        MockRestRequestMatchers.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.method(HttpMethod.PUT).match(request);
+        header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
+        header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
+        method(HttpMethod.PUT).match(request);
       }
     }).andRespond(withSuccess());
 
@@ -78,9 +79,9 @@ public class RestClientTest {
     mockServer.expect(requestTo("http://localhost:8080/hotels/42")).andExpect(new RequestMatcher() {
       @Override
       public void match(ClientHttpRequest request) throws IOException, AssertionError {
-        MockRestRequestMatchers.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.method(HttpMethod.POST).match(request);
+        header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
+        header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
+        method(HttpMethod.POST).match(request);
       }
     }).andRespond(withSuccess());
 
@@ -104,10 +105,10 @@ public class RestClientTest {
     mockServer.expect(requestTo("http://localhost:8080/hotels/42")).andExpect(new RequestMatcher() {
       @Override
       public void match(ClientHttpRequest request) throws IOException, AssertionError {
-        MockRestRequestMatchers.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.header("Test1", "foo").match(request);
-        MockRestRequestMatchers.header("Test2", "bar").match(request);
+        header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).match(request);
+        header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
+        header("Test1", "foo").match(request);
+        header("Test2", "bar").match(request);
         MockRestRequestMatchers.method(HttpMethod.POST).match(request);
       }
     }).andRespond(withSuccess());
@@ -201,8 +202,8 @@ public class RestClientTest {
     mockServer.expect(requestTo("http://localhost:8080/hotels/42")).andExpect(new RequestMatcher() {
       @Override
       public void match(ClientHttpRequest request) throws IOException, AssertionError {
-        MockRestRequestMatchers.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
-        MockRestRequestMatchers.method(HttpMethod.GET).match(request);
+        header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).match(request);
+        method(HttpMethod.GET).match(request);
       }
     }).andRespond(withSuccess("{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"}", MediaType.APPLICATION_JSON));
 

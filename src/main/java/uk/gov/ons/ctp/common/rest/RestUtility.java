@@ -9,6 +9,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * Utility for REST calls
+ */
 @Component
 public class RestUtility {
 
@@ -30,6 +33,13 @@ public class RestUtility {
     this.config = clientConfig;
   }
 
+  /**
+   * Create Uri Components
+   * @param path for uri
+   * @param queryParams for uri
+   * @param pathParams for uri
+   * @return UriComponents from supplied path, queryParams and pathParams
+   */
   public UriComponents createUriComponents(String path, MultiValueMap<String, String> queryParams,
       Object... pathParams) {
     UriComponents uriComponentsWithOutQueryParams = UriComponentsBuilder.newInstance()
@@ -50,6 +60,12 @@ public class RestUtility {
     return uriComponents;
   }
 
+  /**
+   * Creates a Http Entity
+   * @param entity entity to be created from
+   * @param <H> generic passed in for body content
+   * @return HttpEntity containing object as JSON
+   */
   public <H> HttpEntity<H> createHttpEntity(H entity) {
     HttpHeaders headers = new HttpHeaders();
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);

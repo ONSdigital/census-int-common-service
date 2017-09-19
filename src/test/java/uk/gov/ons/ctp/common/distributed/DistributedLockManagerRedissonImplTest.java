@@ -29,7 +29,6 @@ public class DistributedLockManagerRedissonImplTest {
   @Mock
   private RedissonClient redissonClient;
 
-
   /**
    * Before the test
    * @throws Exception oops
@@ -63,7 +62,7 @@ public class DistributedLockManagerRedissonImplTest {
     RLock mockLock = Mockito.mock(RLock.class);
     Mockito.when(redissonClient.getFairLock(any(String.class))).thenReturn(mockLock);
     Mockito.when(mockLock.tryLock()).thenReturn(false);
-    
+
     DistributedLockManagerRedissonImpl impl = new DistributedLockManagerRedissonImpl("test-root", redissonClient, 10);
     Assert.assertFalse(impl.lock("test-lock"));
   }
