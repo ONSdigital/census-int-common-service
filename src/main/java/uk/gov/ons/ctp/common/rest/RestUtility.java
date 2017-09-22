@@ -4,10 +4,14 @@ package uk.gov.ons.ctp.common.rest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.nio.charset.Charset;
+import java.util.Map;
 
 /**
  * Utility for REST calls
@@ -70,6 +74,14 @@ public class RestUtility {
     HttpHeaders headers = new HttpHeaders();
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
+    if (this.config.getUsername() != null && this.config.getPassword() != null) {
+      String auth = this.config.getUsername() + ":" + this.config.getPassword();
+      byte[] encodedAuth = Base64.encode(auth.getBytes(Charset.forName("US-ASCII")));
+      String authHeader = "Basic " + new String(encodedAuth);
+      headers.set("Authorization", authHeader);
+    }
+
     HttpEntity<H> httpEntity = new HttpEntity<H>(entity, headers);
     return httpEntity;
   }

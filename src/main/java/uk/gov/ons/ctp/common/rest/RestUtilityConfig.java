@@ -19,4 +19,6 @@ public class RestUtilityConfig {
   private String scheme = "http";
   private String host = "localhost";
   private String port = "8080";
+  private String username;
+  private String password;
 }
