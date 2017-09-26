@@ -11,7 +11,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.Charset;
-import java.util.Map;
 
 /**
  * Utility for REST calls
