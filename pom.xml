@@ -10,7 +10,7 @@
   <description>CTP : Common Framework</description>
 
   <properties>
-    <commonbom.version>10.45.3-SNAPSHOT</commonbom.version>
+    <commonbom.version>10.45.4-SNAPSHOT</commonbom.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -19,7 +19,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
-    <version>10.45.3-SNAPSHOT</version>
+    <version>10.45.4-SNAPSHOT</version>
   </parent>
 
   <dependencyManagement>
