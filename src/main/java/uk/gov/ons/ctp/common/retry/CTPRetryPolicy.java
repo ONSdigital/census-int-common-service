@@ -109,6 +109,7 @@ public class CTPRetryPolicy implements RetryPolicy {
             }
         } catch (ClassNotFoundException e) {
             log.error("msg {} - cause {}", e.getMessage(), e.getCause());
+            log.error("Stack trace: " + e);
         }
 
         return false;

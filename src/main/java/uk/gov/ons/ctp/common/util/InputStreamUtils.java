@@ -35,6 +35,7 @@ public class InputStreamUtils {
       }
     } catch (IOException e) {
       log.error("Exception thrown while converting stream to string - msg = {}", e.getMessage());
+      log.error("Stack trace: " + e);
     } finally {
       if (br != null) {
         try {
@@ -42,6 +43,7 @@ public class InputStreamUtils {
         } catch (IOException e) {
           log.error("IOException thrown while closing buffered reader used to convert stream - msg = {}",
                   e.getMessage());
+          log.error("Stack trace: " + e);
         }
       }
     }

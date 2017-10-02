@@ -65,6 +65,7 @@ public class DeadLetterLogCommand<X> {
       } catch (IOException ioe) {
         // we cannot marshal it to xml, so last ditch .. toString()
         log.error("Tried but failed to Dead Letter Log : {}", thingToMarshal);
+        log.error("Stack trace: " + ioe);
       }
     }
   }
