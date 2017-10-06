@@ -95,6 +95,7 @@ public class CTPException extends Exception {
     fault = afault;
   }
 
+  
   /**
    *
    * @return the fault associated with the CTPException.
@@ -137,5 +138,10 @@ public class CTPException extends Exception {
       jgen.writeEndObject();
       jgen.writeEndObject();
     }
+  }
+  
+  @Override
+  public String toString() {
+    return super.toString() + ": " + fault.name();
   }
 }

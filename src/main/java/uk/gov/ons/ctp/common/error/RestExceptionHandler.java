@@ -37,7 +37,8 @@ public class RestExceptionHandler {
    */
     @ExceptionHandler(CTPException.class)
     public ResponseEntity<?> handleCTPException(CTPException exception) {
-        log.error("handleCTPException {}", exception);
+        log.error("handleCTPException");
+        log.error(exception.toString(), exception);
 
         HttpStatus status;
         switch (exception.getFault()) {
