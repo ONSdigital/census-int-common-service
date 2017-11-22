@@ -1,16 +1,19 @@
 language: java
-jdk:
-- oraclejdk8
+jdk: openjdk8
 
-# deploy:
-#   provider: releases
-#   api_key:
-#     secure: n/P1hkkTq8NANu8QYhaYAAzwEAFpfm4JZ6zfN5B05Tju3Rwr7Dy5QeSzQ488YKbJuBj7hzDkmyVUUbeUEZVqE3KCiHn1hrLHOca+Xpm0tyuAkKosD4Q3I8qvEVO1I+otgUDHinZCbYPrwgHtS5FgpoL+MDz4RZCfstes4iL7LzQFHL6I387XNUVU5TQSDbo3mMXiwWDyR9Nt9YcNLa801IVH3nwew0g4DyREMQujc3icdDt8H10XH8sN6vR0W9fMBDZt5X3RakTNIw2oGjgOfchaCtQ0dDDp4vcIxtsBhXMES7zZeTUD7GyNb9ckJxwC5ee9N6+K06hV9/vtMz3R/fZxC457Xge5DZ0zQknuPfAP+QtY8I97/RNSYZKlDe6kyEZii2iPxYypoDQM8jHssObvF6qxFPSA3oy0l6Zu3fQ9Fazs5riLKT90DTzvXYbOrcfeaY3NOWQxP1TKWPfa+O8eOC0voKVJsB1UI6N2GAr98vvN4XvjvnsKjJ5WyXCb23p23UwJ4tQ2jn4tlzb/N8aOTkODLw5dCGWYgBokiRv/H3/bsCXhhe7xhB47cT/CViIWkzP0wc3zmxUCn75QpMRDew7fzGjvrefoA3Z+qgjr2v5Jdr6lMQeiJpedKO7Xt3vHnrUAobjt4uwCq6rw2a0SN0QC62KP1tpCl31JQ+U=
-#   file: '$TRAVIS_BUILD_DIR/framework/target/framework-9.24.0-SNAPSHOT.jar'
-#   skip_cleanup: true
-#   on:
-#     repo: ONSdigital/rm-common-service
+before_install: cp .travis.settings.xml $HOME/.m2/settings.xml
 
 notifications:
   slack:
-    secure: noMpwk4x1FW+saoGsJ8vrHadVFVA1USQu7UAZCvzssT7MMLX8vUWxl6QxonxgHX9xIyodDJzm8jHXpskjFp8LlAaDs8hnMdvY+7LgrwF2/GLczsGuHuxKqKC6I34pWEN/AFutp4VxOkvCRNnf2UJM4E1uZgawne+mBjYcgSIob4s1ndF680QiNnSIM+90teuccuE400wMF3ImE90In65vpGqaEvGy5dLbEFaYk8CBDntZ8svje/gBgoIL32AY6eujQRZs6vnMnn8ditogU2icSBEoHfUdJnmCL4+EIxrkNjI7Dni/4QNw9WPEr3JqqqPaTDcfwMheDStuIek0+WT/eOkzJVIaO24ZLVOocGqzkdF6aqIn0AieSncZ28VLRrtKHU2/Da4XeuvsC4EeqJaK6gBG5TgD2MJYA5ItgxcaWKqsrtleGy9ZVWSWGlVwRairQKGjp7lSMjrATVvOTApL9Ol2PmUWnXC2K1hNV4YYEomqQbX/SVNv1jU6uxW5OmghN9oBsY6G7x7kCf7d0Q17wtp7WGeSdhc3dBP7shAJpWfNI3VCvGEuRZJWV8/icKSYijO6CkxtEBYho32O8OBU5yodZN1a09yl5vkyFyMF0kF3bNGji46MBaXCZbq2Bp3vnmq6HmBIUP2pTAbAvaSBk9/w6+lfBj6LEVkWC7Orms=
+    rooms:
+      secure: Ej8YfbNt53/hxswHVcfQAvVcVvWMFG2qkErQCQf8sGNcGR3adx2r5cHvKGuXARQtsKzd4S8Kw68cLR1htnaKMsI1AY3aa8yC++WOdqmbcvY/daZgmz2gU8sAidSS4eJ68AhMj29nFViw/3DgLlaf8apMIzhvxEvuI6FkvjNs5Y7O4rBFhYWAa2T28GXRhMuLwBZ0yiDXdmmZdp4CNVWEk4eOnDm6cQ/2UxbCPuNngYXANKE5W4cMA/pIfq2ahrOvQFYgLW9AfhiYRrO3Ijh7fNSv3neyaIIuOVC/5xKGPiCYWwT8gqAqh3Cqq1TLcXce5WBI3H6mbdfM1MTtfn5cOwvIJU2S/zSOKhdRPCaUQuf1kwc+ldRHfeBQ+xwRfYQQ4GXiFT1z6mzvKrNI/pUdI+VCEddw8EeX/lDrTLIR4aQ+04glIJOrJRjTvqur6QbHYnnHPSADGLczt6oPQyHeh+fKMeNAuv+cGO8FbmF7GzEFmDDdWP0stlWgk+75534NDS33ojsnrhYj3GvRmRIFRpntJVcAr0W8mupi10RQ9XkOuEQVKkSuRBJVEXYJ0e4D3PqjPs4hECLyB3ZlNw+t486fELKK+qWWy+7voxzPDEaxY0OvFRhkOPLTezFpOhU82uckPI/5QAFngQqNFJ5OCL795bmQRXqtSM+pj/XwC7U=
+    on_failure: always
+    on_success: never
+
+cache:
+  directories:
+  - $HOME/.m2
+
+branches:
+    only:
+        - master
