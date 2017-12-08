@@ -11,13 +11,24 @@
 
             <repositories>
                 <repository>
-                    <id>release-repo</id>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>central</id>
                     <name>libs-release</name>
                     <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-release-local</url>
                 </repository>
                 <repository>
-                    <id>snapshot-repo</id>
+                    <id>snapshots</id>
                     <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-snapshot-local/</url>
+                </repository>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>maven-central</id>
+                    <name>Central Repository</name>
+                    <url>https://repo.maven.apache.org/maven2</url>
                 </repository>
             </repositories>
         </profile>
@@ -26,4 +37,17 @@
     <activeProfiles>
         <activeProfile>artifactory</activeProfile>
     </activeProfiles>
+
+    <servers>
+        <server>
+            <username>travis</username>
+            <password>${env.ARTIFACTORY_PASSWORD}</password>
+            <id>central</id>
+        </server>
+        <server>
+            <username>travis</username>
+            <password>${env.ARTIFACTORY_PASSWORD}</password>
+            <id>snapshots</id>
+        </server>
+    </servers>
 </settings>

@@ -1,12 +1,28 @@
 language: java
 jdk: openjdk8
 
-before_install: cp .travis.settings.xml $HOME/.m2/settings.xml
+before_install:
+  # Checkout master branch not commit on master builds
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    git checkout $TRAVIS_BRANCH;
+    fi
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - curl ifconfig.co|xargs echo "Travis IP address is ";
+
+script:
+  - mvn test -B
+  # Only release on master builds
+  - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    git config --global set user.email "travis@travis-ci.org";
+    git config --global set user.name "Travis CI";
+    mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
+    mvn -B release:perform;
+    fi
 
 notifications:
   slack:
     rooms:
-      secure: Ej8YfbNt53/hxswHVcfQAvVcVvWMFG2qkErQCQf8sGNcGR3adx2r5cHvKGuXARQtsKzd4S8Kw68cLR1htnaKMsI1AY3aa8yC++WOdqmbcvY/daZgmz2gU8sAidSS4eJ68AhMj29nFViw/3DgLlaf8apMIzhvxEvuI6FkvjNs5Y7O4rBFhYWAa2T28GXRhMuLwBZ0yiDXdmmZdp4CNVWEk4eOnDm6cQ/2UxbCPuNngYXANKE5W4cMA/pIfq2ahrOvQFYgLW9AfhiYRrO3Ijh7fNSv3neyaIIuOVC/5xKGPiCYWwT8gqAqh3Cqq1TLcXce5WBI3H6mbdfM1MTtfn5cOwvIJU2S/zSOKhdRPCaUQuf1kwc+ldRHfeBQ+xwRfYQQ4GXiFT1z6mzvKrNI/pUdI+VCEddw8EeX/lDrTLIR4aQ+04glIJOrJRjTvqur6QbHYnnHPSADGLczt6oPQyHeh+fKMeNAuv+cGO8FbmF7GzEFmDDdWP0stlWgk+75534NDS33ojsnrhYj3GvRmRIFRpntJVcAr0W8mupi10RQ9XkOuEQVKkSuRBJVEXYJ0e4D3PqjPs4hECLyB3ZlNw+t486fELKK+qWWy+7voxzPDEaxY0OvFRhkOPLTezFpOhU82uckPI/5QAFngQqNFJ5OCL795bmQRXqtSM+pj/XwC7U=
+      secure: wadECEy7kUTvXPwyDFujBeRNapu9JBf3D4spDmIRh6zqm3Disy29tj/oYNHqo0BEMsFUhp/EyP97Sk8nHDOHIOtOfx6Y5uWLuYgUxPXX28+ClBqSLI0KWBGNNB5HmJuoeb9w49HOhbIfClLxU8n/vBUdoRQHQTvuL2BFsaLcBesE/AdC3DozkZVT7kwS5s5OYWOxxlk+mCZpXv4Wx77a/5H2bRZg7UH7q7YDCfbXSmUotUyz262ICTkMnM/Ir3VPWRmyyOwplxOkb1qPzvetIvZ0ZC0kVzpDfvnz/G8vLvQLAA5UkfzY51Z+pZSK+aDAxkcroPuAqraL8xmH9mDjDijJIPj46jqanLdezEfy9s+ug8DNozR4kmxhejui+an8kW0PRiv+hrpqZBDuJ4Ce8+cbwrIP9wfFdQxuETgmP28kk1OjX98vMTao3v+1P2N2r3n0FfshJz7tbqcrHt09c7+NBIWkGgM+774VqiiirI2cc2ercMYs/MWYcnahfujfdbWyFMUuwucNdTMGrR6+PHntaFo9QW2W5EvMH4o+wNTua+oKiEORSvdYJ4fNqpyU1LVdyzud2RaEreSqC0VqyMNpYC0/ZRM3mXtlSYwYD/BL4PIYyefsDOKIW71wm29t5btxNML9pVHmjpNIaS6SZ5PM1O2I+U0M/Mfi3SVokHk=
     on_failure: always
     on_success: never
 

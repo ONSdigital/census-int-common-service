@@ -8,13 +8,13 @@ import java.util.List;
  * data of type T into a list of lists, which like a map are keyed. Effectively
  * :
  *
- * Map<String, List<T>>
+ * Map&lt;String, List&lt;T&gt;&gt;
  *
  * where the manager will allow the caller to retrieve either just its own keyed
  * list or a super list representing the content of all other application
  * instances using the same configured manager.
  *
- * @param <T> The List<type> to be stored
+ * @param <T>; The List&lt;type&gt; to be stored
  */
 public interface DistributedListManager<T> {
 

@@ -27,7 +27,6 @@ public class DeadLetterLogCommand<X> {
 
   /**
    * Checked function executor interface
-   * @param <X>
    */
   @FunctionalInterface
   public interface CheckedFunction<X> {
