@@ -121,7 +121,6 @@ public class CTPException extends Exception {
      * @param value the CTPException to serialize
      * @param jgen the Jackson JsonGenerator
      * @param provider the Jackson SerializerProvider
-     * @throws IOException
      */
     @Override
     public final void serialize(final CTPException value, final JsonGenerator jgen, final SerializerProvider provider)

@@ -18,7 +18,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
-    <version>10.49.6-SNAPSHOT</version>
+    <version>10.49.6</version>
   </parent>
 
   <dependencies>
@@ -120,5 +120,11 @@
       </plugin>
     </plugins>
   </build>
+
+  <scm>
+    <url>https://github.com/ONSdigital/rm-common-service</url>
+    <connection>scm:git:https://github.com/ONSdigital/rm-common-service</connection>
+    <developerConnection>scm:git:https://github.com/ONSdigital/rm-common-service</developerConnection>
+  </scm>
 
 </project>
