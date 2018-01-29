@@ -10,21 +10,21 @@ import static org.junit.Assert.assertEquals;
 
 public class MultiIsoDateFormatTest {
 
-   private static final Date TEST_DATE = new Date(1516120265100L);
+    private static final Date TEST_DATE = new Date(1516120265100L);
 
-   private MultiIsoDateFormat dateFormat;
+    private MultiIsoDateFormat dateFormat;
 
-   @Before
-   public void setUp(){
-      this.dateFormat = new MultiIsoDateFormat();
-   }
+    @Before
+    public void setUp() {
+        this.dateFormat = new MultiIsoDateFormat();
+    }
 
-   @Test
-   public void testFormat(){
-       String formatted = this.dateFormat.format(TEST_DATE);
+    @Test
+    public void testFormat() {
+        String formatted = this.dateFormat.format(TEST_DATE);
 
-       assertEquals("2018-01-16T16:31:05.100Z", formatted);
-   }
+        assertEquals("2018-01-16T16:31:05.100Z", formatted);
+    }
 
     @Test
     public void testParse1() throws ParseException {
@@ -40,10 +40,10 @@ public class MultiIsoDateFormatTest {
         assertEquals(TEST_DATE, date);
     }
 
-   @Test
-   public void testParse3() throws ParseException {
-       Date date = this.dateFormat.parse("2018-01-16T16:31:05.100Z");
+    @Test
+    public void testParse3() throws ParseException {
+        Date date = this.dateFormat.parse("2018-01-16T16:31:05.100Z");
 
-       assertEquals(TEST_DATE, date);
-   }
+        assertEquals(TEST_DATE, date);
+    }
 }
