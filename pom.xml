@@ -18,7 +18,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.product</groupId>
     <artifactId>rm-common-config</artifactId>
-    <version>10.49.6</version>
+    <version>10.49.8</version>
   </parent>
 
   <dependencies>
