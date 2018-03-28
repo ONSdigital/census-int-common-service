@@ -27,7 +27,7 @@ public class AggregatedDateFormat extends DateFormat {
 
     @Override
     public StringBuffer format(final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {
-        log.debug("Formatting: {}", date);
+        log.trace("Formatting: {}", date);
         return this.outputFormat.format(date, toAppendTo, fieldPosition);
     }
 
@@ -38,7 +38,7 @@ public class AggregatedDateFormat extends DateFormat {
 
     @Override
     public Date parse(final String source, final ParsePosition pos) {
-        log.debug("Parsing: {}", source);
+        log.trace("Parsing: {}", source);
         return Arrays.stream(this.inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
     }
 }
