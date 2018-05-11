@@ -36,8 +36,10 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
     Map<E, S> outputMap = transitions.get(sourceState);
     if (outputMap != null) {
       destinationState = outputMap.get(event);
+      log.info("Moving from " + sourceState.getClass().getName() + " to " + destinationState.getClass().getName() + " due to " + event.getClass().getName());
     }
     if (destinationState == null) {
+    	log.error("No valid transition found from " + sourceState.getClass().getName() + " using " + event.getClass().getName());
       throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
     }
     return destinationState;
