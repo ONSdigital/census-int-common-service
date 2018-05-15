@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.state;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
  * @param <S> The state type we transit from and to
  * @param <E> The event type that effects the transition
  */
+@Slf4j
 @Data
 @Getter
 public class BasicStateTransitionManager<S, E> implements StateTransitionManager<S, E> {
