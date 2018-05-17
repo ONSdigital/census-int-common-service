@@ -39,14 +39,14 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
     if (outputMap != null) {
       destinationState = outputMap.get(event);
     }
-    if (destinationState == null) {
-      log.warn("No valid transition found from " + sourceState.getClass().getName()
-          + " using " + event.getClass().getName());
+    if (destinationState == null || destinationState.equals(sourceState)) {
+      log.warn("No valid transition found from " + sourceState.toString()
+          + " using " + event.toString());
       throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
     } else {
-      log.info("Moving from " + sourceState.getClass().getName()
-          + " to " + destinationState.getClass().getName()
-          + " due to " + event.getClass().getName());
+      log.info("Moving from " + sourceState.toString()
+          + " to " + destinationState.toString()
+          + " due to " + event.toString());
     }
     return destinationState;
   }
