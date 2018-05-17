@@ -40,7 +40,7 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
       destinationState = outputMap.get(event);
     }
     if (destinationState == null) {
-      log.error("No valid transition found from " + sourceState.getClass().getName()
+      log.warn("No valid transition found from " + sourceState.getClass().getName()
           + " using " + event.getClass().getName());
       throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
     } else {
