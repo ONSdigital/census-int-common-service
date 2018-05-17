@@ -39,7 +39,7 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
     if (outputMap != null) {
       destinationState = outputMap.get(event);
     }
-    if (destinationState == null || destinationState.equals(sourceState)) {
+    if (destinationState == null) {
       log.warn("No valid transition found from " + sourceState.toString()
           + " using " + event.toString());
       throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
