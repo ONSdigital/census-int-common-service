@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.state;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
  * @param <S> The state type we transit from and to
  * @param <E> The event type that effects the transition
  */
+@Slf4j
 @Data
 @Getter
 public class BasicStateTransitionManager<S, E> implements StateTransitionManager<S, E> {
@@ -38,7 +40,13 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
       destinationState = outputMap.get(event);
     }
     if (destinationState == null) {
+      log.warn("No valid transition found from " + sourceState.toString()
+          + " using " + event.toString());
       throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
+    } else {
+      log.info("Moving from " + sourceState.toString()
+          + " to " + destinationState.toString()
+          + " due to " + event.toString());
     }
     return destinationState;
   }
