@@ -8,6 +8,7 @@ public interface StateTransitionManagerFactory {
 
   /**
    * Get the StateTransitionManager for a given entity
+   *
    * @param <S> the state type
    * @param <E> the event type
    * @param entity the entity identified by name

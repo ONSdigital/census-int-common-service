@@ -1,13 +1,12 @@
 package uk.gov.ons.ctp.common.state;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.ons.ctp.common.error.CTPException;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A Simple impl of StateTransitionManager
@@ -26,6 +25,7 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
 
   /**
    * Construct the instance with a provided map of transitions
+   *
    * @param transitionMap the transitions
    */
   public BasicStateTransitionManager(final Map<S, Map<E, S>> transitionMap) {
@@ -40,13 +40,21 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
       destinationState = outputMap.get(event);
     }
     if (destinationState == null) {
-      log.warn("No valid transition found from " + sourceState.toString()
-          + " using " + event.toString());
-      throw new CTPException(CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
+      log.warn(
+          "No valid transition found from "
+              + sourceState.toString()
+              + " using "
+              + event.toString());
+      throw new CTPException(
+          CTPException.Fault.BAD_REQUEST, String.format(TRANSITION_ERROR_MSG, sourceState, event));
     } else {
-      log.info("Moving from " + sourceState.toString()
-          + " to " + destinationState.toString()
-          + " due to " + event.toString());
+      log.info(
+          "Moving from "
+              + sourceState.toString()
+              + " to "
+              + destinationState.toString()
+              + " due to "
+              + event.toString());
     }
     return destinationState;
   }
@@ -59,5 +67,4 @@ public class BasicStateTransitionManager<S, E> implements StateTransitionManager
     }
     return Collections.emptyMap();
   }
-
 }

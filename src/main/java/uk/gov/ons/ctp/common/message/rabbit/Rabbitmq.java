@@ -6,10 +6,10 @@ import net.sourceforge.cobertura.CoverageIgnore;
 @Data
 @CoverageIgnore
 public class Rabbitmq {
-    private String username;
-    private String password;
-    private String host;
-    private int port;
-    private String virtualHost;
-    private String cron;
+  private String username;
+  private String password;
+  private String host;
+  private int port;
+  private String virtualHost;
+  private String cron;
 }

@@ -1,17 +1,15 @@
 package uk.gov.ons.ctp.common.util;
 
+import java.util.Optional;
 import net.sourceforge.cobertura.CoverageIgnore;
 
-import java.util.Optional;
-
-/**
- * Enum related Utilities
- */
+/** Enum related Utilities */
 @CoverageIgnore
 public class EnumUtils {
 
   /**
    * Gets optional Enum from String
+   *
    * @param <T> type to use
    * @param enumClass Enum Class to use
    * @param value String to get from
@@ -21,7 +19,6 @@ public class EnumUtils {
   public static <T extends Enum<T>> T getEnumFromString(Class<T> enumClass, String value) {
     if (enumClass == null) {
       throw new IllegalArgumentException("cant be null");
-
     }
 
     for (Enum<?> enumValue : enumClass.getEnumConstants()) {
@@ -41,12 +38,14 @@ public class EnumUtils {
 
   /**
    * Gets optional Enum from String
+   *
    * @param enumClass Enum Class to use
    * @param value String to get from
    * @param <T> optional
    * @return Optional enum from string
    */
-  public static <T extends Enum<T>> Optional<T> getOptionalEnumFromString(Class<T> enumClass, String value) {
+  public static <T extends Enum<T>> Optional<T> getOptionalEnumFromString(
+      Class<T> enumClass, String value) {
     T inst = null;
     try {
       inst = getEnumFromString(enumClass, value);

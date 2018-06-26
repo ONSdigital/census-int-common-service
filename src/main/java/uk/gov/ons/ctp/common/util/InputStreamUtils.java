@@ -1,21 +1,19 @@
 package uk.gov.ons.ctp.common.util;
 
-import lombok.extern.slf4j.Slf4j;
-import net.sourceforge.cobertura.CoverageIgnore;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.cobertura.CoverageIgnore;
 
-/**
- * Class to collect together some useful InputStream manipulation methods
- */
+/** Class to collect together some useful InputStream manipulation methods */
 @CoverageIgnore
 @Slf4j
 public class InputStreamUtils {
   /**
    * Generate the content String from InputStream.
+   *
    * @param is the InputStream
    * @return the content String
    */
@@ -41,8 +39,9 @@ public class InputStreamUtils {
         try {
           br.close();
         } catch (IOException e) {
-          log.error("IOException thrown while closing buffered reader used to convert stream - msg = {}",
-                  e.getMessage());
+          log.error(
+              "IOException thrown while closing buffered reader used to convert stream - msg = {}",
+              e.getMessage());
           log.error("Stack trace: " + e);
         }
       }

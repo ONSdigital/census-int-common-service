@@ -1,12 +1,5 @@
 package uk.gov.ons.ctp.common.state;
 
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.ons.ctp.common.error.CTPException;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
@@ -14,19 +7,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.ons.ctp.common.state.BasicStateTransitionManager.TRANSITION_ERROR_MSG;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
+import uk.gov.ons.ctp.common.error.CTPException;
+
 /**
- * A test of the state transition manager
- * It simply has to test a single good and a single bad transition - all it is testing is the underlying mechanism,
- * not a real implementation, where we will want to assert all of the valid and invalid transitions
- *
+ * A test of the state transition manager It simply has to test a single good and a single bad
+ * transition - all it is testing is the underlying mechanism, not a real implementation, where we
+ * will want to assert all of the valid and invalid transitions
  */
 public class TestStateTransitionManager {
 
   private StateTransitionManager<TestState, TestEvent> stm;
 
-  /**
-   * Setup the transitions
-   */
+  /** Setup the transitions */
   @Before
   public void setUp() {
     Map<TestState, Map<TestEvent, TestState>> transitions = new HashMap<>();
@@ -39,32 +35,33 @@ public class TestStateTransitionManager {
 
   /**
    * test a valid transition
+   *
    * @throws CTPException if transition does
    */
   @Test
   public void testGood() throws CTPException {
-   assertEquals(TestState.PENDING, stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED));
+    assertEquals(
+        TestState.PENDING, stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_DISTRIBUTED));
   }
 
-  /**
-   * tests a bad transition
-   */
+  /** tests a bad transition */
   @Test
   public void testBad() {
-   try {
-     stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
-     fail();
-   } catch (CTPException e) {
-     assertEquals(CTPException.Fault.BAD_REQUEST, e.getFault());
-     assertEquals(String.format(TRANSITION_ERROR_MSG, TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED), e.getMessage());
-   }
+    try {
+      stm.transition(TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED);
+      fail();
+    } catch (CTPException e) {
+      assertEquals(CTPException.Fault.BAD_REQUEST, e.getFault());
+      assertEquals(
+          String.format(TRANSITION_ERROR_MSG, TestState.SUBMITTED, TestEvent.REQUEST_ACCEPTED),
+          e.getMessage());
+    }
   }
 
-  /**
-   * tests available transitions
-   */
+  /** tests available transitions */
   @Test
-  public void givenStateSubmittedWhenGetAvailableTransitionsThenAvailableTransitionsArePendingAndCompleted() {
+  public void
+      givenStateSubmittedWhenGetAvailableTransitionsThenAvailableTransitionsArePendingAndCompleted() {
     // Given
     TestState submitted = TestState.SUBMITTED;
 
@@ -76,18 +73,16 @@ public class TestStateTransitionManager {
     assertThat(availableTransitions, hasEntry(TestEvent.REQUEST_COMPLETED, TestState.COMPLETED));
   }
 
-  /**
-   * tests no transitions found
-   */
+  /** tests no transitions found */
   @Test
   public void givenStateActiveWhenGetAvailableTransitionsThenAvailableTransitionsIsEmpty() {
-      // Given
-      TestState active = TestState.ACTIVE;
+    // Given
+    TestState active = TestState.ACTIVE;
 
-      // When
-      Map<TestEvent, TestState> availableTransitions = stm.getAvailableTransitions(active);
+    // When
+    Map<TestEvent, TestState> availableTransitions = stm.getAvailableTransitions(active);
 
-      // Then
-      assertThat(availableTransitions.keySet(), empty());
+    // Then
+    assertThat(availableTransitions.keySet(), empty());
   }
 }

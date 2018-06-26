@@ -1,18 +1,16 @@
 package uk.gov.ons.ctp.common.distributed;
 
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 
-/**
- * Distributed Lock Manager for Redisson
- */
-public class DistributedLockManagerRedissonImpl extends DistributedManagerBase implements DistributedLockManager {
+/** Distributed Lock Manager for Redisson */
+public class DistributedLockManagerRedissonImpl extends DistributedManagerBase
+    implements DistributedLockManager {
 
   private Integer timeToLive;
   private RedissonClient redissonClient;
@@ -24,13 +22,14 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
   /**
    * create the impl
    *
-   * @param keyRoot each lock that is written with this impl will be stored with
-   *          this prefix in its key
+   * @param keyRoot each lock that is written with this impl will be stored with this prefix in its
+   *     key
    * @param redissonClient the client connected to the underlying redis server
-   * @param timeToLive the time that each lock added will be allowed to live in
-   *          seconds before the underlying redis server purges it
+   * @param timeToLive the time that each lock added will be allowed to live in seconds before the
+   *     underlying redis server purges it
    */
-  public DistributedLockManagerRedissonImpl(String keyRoot, RedissonClient redissonClient, Integer timeToLive) {
+  public DistributedLockManagerRedissonImpl(
+      String keyRoot, RedissonClient redissonClient, Integer timeToLive) {
     super(keyRoot);
     this.locks = Collections.synchronizedSet(new TreeSet<String>());
     this.timeToLive = timeToLive;
@@ -91,7 +90,7 @@ public class DistributedLockManagerRedissonImpl extends DistributedManagerBase i
 
     synchronized (locks) {
       Iterator<String> i = locks.iterator(); // Must be in synchronized block of
-                                             // code
+      // code
       while (i.hasNext()) {
         String key = i.next();
         RLock lock = redissonClient.getFairLock(createGlobalKey(key));

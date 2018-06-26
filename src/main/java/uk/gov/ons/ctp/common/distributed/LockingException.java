@@ -8,14 +8,12 @@ public class LockingException extends Exception {
 
   private static final long serialVersionUID = 7509566308215475091L;
 
-  /**
-   * Empty Locking Exception constructor
-   */
-  public LockingException() {
-  }
+  /** Empty Locking Exception constructor */
+  public LockingException() {}
 
   /**
    * Locking Exception Constructor
+   *
    * @param message message
    */
   public LockingException(String message) {
@@ -24,6 +22,7 @@ public class LockingException extends Exception {
 
   /**
    * Locking Exception Constructor
+   *
    * @param cause cause of lock
    */
   public LockingException(Throwable cause) {
@@ -32,6 +31,7 @@ public class LockingException extends Exception {
 
   /**
    * Locking Exception Constructor
+   *
    * @param message message
    * @param cause cause of lock
    */
@@ -41,14 +41,14 @@ public class LockingException extends Exception {
 
   /**
    * Locking Exception Constructor
+   *
    * @param message message
    * @param cause cause of lock
    * @param enableSuppression whether suppression should be enabled
    * @param writableStackTrace writable stack trace
    */
-  public LockingException(String message, Throwable cause, boolean enableSuppression,
-      boolean writableStackTrace) {
+  public LockingException(
+      String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
-
 }
