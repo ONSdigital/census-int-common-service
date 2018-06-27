@@ -1,15 +1,12 @@
 package uk.gov.ons.ctp.common.distributed;
 
+import java.util.concurrent.TimeUnit;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RedissonClient;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * DistributedAtomicLong implementation.
- *
- */
-public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase implements DistributedAtomicLong {
+/** DistributedAtomicLong implementation. */
+public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase
+    implements DistributedAtomicLong {
 
   private Integer timeToLive = 0;
   private RedissonClient redissonClient;
@@ -17,14 +14,13 @@ public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase im
   /**
    * Constructor
    *
-   * @param keyRoot each distrubuted AtomicLong created will be stored with this
-   *          prefix in its key
+   * @param keyRoot each distrubuted AtomicLong created will be stored with this prefix in its key
    * @param redissonClient the client connected to the underlying redis server
-   * @param timeToLive the time that each AtomicLong will be allowed to live in
-   *          seconds before the underlying redis server purges it. If minus
-   *          number or zero will not have expiry set.
+   * @param timeToLive the time that each AtomicLong will be allowed to live in seconds before the
+   *     underlying redis server purges it. If minus number or zero will not have expiry set.
    */
-  public DistributedAtomicLongRedissonImpl(String keyRoot, RedissonClient redissonClient, Integer timeToLive) {
+  public DistributedAtomicLongRedissonImpl(
+      String keyRoot, RedissonClient redissonClient, Integer timeToLive) {
     super(keyRoot);
     this.timeToLive = timeToLive;
     this.redissonClient = redissonClient;
@@ -60,9 +56,8 @@ public class DistributedAtomicLongRedissonImpl extends DistributedManagerBase im
   }
 
   /**
-   * Set the expiry if not already set and one required. If timeToLive is less
-   * than or equal to zero do not set expiry and allow to remain until
-   * explicitly deleted.
+   * Set the expiry if not already set and one required. If timeToLive is less than or equal to zero
+   * do not set expiry and allow to remain until explicitly deleted.
    *
    * @param key the name of distributed AtomicLong.
    * @return RAtomicLong

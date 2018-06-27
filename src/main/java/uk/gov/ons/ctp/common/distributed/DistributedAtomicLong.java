@@ -1,9 +1,6 @@
 package uk.gov.ons.ctp.common.distributed;
 
-/**
- * Manage a count in a distributed service.
- *
- */
+/** Manage a count in a distributed service. */
 public interface DistributedAtomicLong {
 
   /**

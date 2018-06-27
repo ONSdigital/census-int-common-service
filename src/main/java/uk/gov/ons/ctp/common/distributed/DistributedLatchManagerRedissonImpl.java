@@ -5,12 +5,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import org.redisson.api.RCountDownLatch;
 import org.redisson.api.RedissonClient;
 
-/**
- * DistributedLatchManager implementation
- *
- */
-
-public class DistributedLatchManagerRedissonImpl extends DistributedManagerBase implements DistributedLatchManager {
+/** DistributedLatchManager implementation */
+public class DistributedLatchManagerRedissonImpl extends DistributedManagerBase
+    implements DistributedLatchManager {
 
   private Integer timeToWait;
   private RedissonClient redissonClient;
@@ -22,7 +19,8 @@ public class DistributedLatchManagerRedissonImpl extends DistributedManagerBase 
    * @param redissonClient the client connected to the underlying redis serve.
    * @param timeToWait time to wait for latch to countdown to zero.
    */
-  public DistributedLatchManagerRedissonImpl(String keyRoot, RedissonClient redissonClient, Integer timeToWait) {
+  public DistributedLatchManagerRedissonImpl(
+      String keyRoot, RedissonClient redissonClient, Integer timeToWait) {
     super(keyRoot);
     this.redissonClient = redissonClient;
     this.timeToWait = timeToWait;
@@ -48,5 +46,4 @@ public class DistributedLatchManagerRedissonImpl extends DistributedManagerBase 
   public boolean deleteCountDownLatch(String key) {
     return redissonClient.getCountDownLatch(createGlobalKey(key)).delete();
   }
-
 }

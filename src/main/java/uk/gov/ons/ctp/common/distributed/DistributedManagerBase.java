@@ -2,15 +2,14 @@ package uk.gov.ons.ctp.common.distributed;
 
 import java.util.UUID;
 
-/**
- * Base for Distributed Manager
- */
+/** Base for Distributed Manager */
 public abstract class DistributedManagerBase {
   protected String keyRoot;
   protected String uuid;
 
   /**
    * Distributed Manager Base constructor
+   *
    * @param keyRoot root key
    */
   public DistributedManagerBase(String keyRoot) {
@@ -20,6 +19,7 @@ public abstract class DistributedManagerBase {
 
   /**
    * Creates Key
+   *
    * @param key key string
    * @return String key
    */
@@ -29,6 +29,7 @@ public abstract class DistributedManagerBase {
 
   /**
    * Creates global Key
+   *
    * @param key key string
    * @return String key
    */
@@ -38,6 +39,7 @@ public abstract class DistributedManagerBase {
 
   /**
    * Creates Key for all instances
+   *
    * @param key key string
    * @return String key
    */

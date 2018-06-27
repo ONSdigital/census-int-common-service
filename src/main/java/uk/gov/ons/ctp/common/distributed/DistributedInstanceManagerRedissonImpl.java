@@ -3,10 +3,7 @@ package uk.gov.ons.ctp.common.distributed;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RedissonClient;
 
-/**
- * DistributedInstanceManager implementation
- *
- */
+/** DistributedInstanceManager implementation */
 public class DistributedInstanceManagerRedissonImpl extends DistributedManagerBase
     implements DistributedInstanceManager {
 
@@ -39,5 +36,4 @@ public class DistributedInstanceManagerRedissonImpl extends DistributedManagerBa
     RAtomicLong instanceCount = redissonClient.getAtomicLong(createGlobalKey(key));
     return (instanceCount.get() > 0) ? instanceCount.getAndDecrement() : 0;
   }
-
 }

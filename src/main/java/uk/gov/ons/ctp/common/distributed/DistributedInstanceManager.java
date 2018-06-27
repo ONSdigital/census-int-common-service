@@ -1,9 +1,8 @@
 package uk.gov.ons.ctp.common.distributed;
 
 /**
- * Manage a count of a distributed service. It is the calling code concern to
- * ensure integrity of the count.
- *
+ * Manage a count of a distributed service. It is the calling code concern to ensure integrity of
+ * the count.
  */
 public interface DistributedInstanceManager {
 
@@ -30,5 +29,4 @@ public interface DistributedInstanceManager {
    * @return the count of running service instances.
    */
   long decrementInstanceCount(String key);
-
 }
