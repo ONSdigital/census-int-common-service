@@ -51,24 +51,38 @@ public class RestUtility {
     // Have to build UriComponents for query parameters separately as Expand interprets braces in
     // JSON query string
     // values as URI template variables to be replaced.
-    UriComponents uriComponents =
-        UriComponentsBuilder.newInstance()
-            .uriComponents(uriComponentsWithOutQueryParams)
-            .queryParams(queryParams)
-            .build()
-            .encode();
 
-    return uriComponents;
+    return UriComponentsBuilder.newInstance()
+        .uriComponents(uriComponentsWithOutQueryParams)
+        .queryParams(queryParams)
+        .build()
+        .encode();
   }
 
   /**
-   * Creates a Http Entity
+   * Creates a {@link HttpEntity} with basic auth header and application/json set for
+   * Content-Type and Accept
+   *
+   * @param <H> generic passed in for body content
+   * @return HttpEntity containing object as JSON
+   */
+  public <H> HttpEntity<H> createHttpEntityWithAuthHeader() {
+    return new HttpEntity<>(getHttpHeaders());
+  }
+
+  /**
+   * Creates a {@link HttpEntity} with basic authentication header and application/json set for
+   * Content-Type and Accept
    *
    * @param entity entity to be created from
    * @param <H> generic passed in for body content
    * @return HttpEntity containing object as JSON
    */
   public <H> HttpEntity<H> createHttpEntity(H entity) {
+    return new HttpEntity<>(entity, getHttpHeaders());
+  }
+
+  private HttpHeaders getHttpHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -79,8 +93,6 @@ public class RestUtility {
       String authHeader = "Basic " + new String(encodedAuth);
       headers.set("Authorization", authHeader);
     }
-
-    HttpEntity<H> httpEntity = new HttpEntity<H>(entity, headers);
-    return httpEntity;
+    return headers;
   }
 }
