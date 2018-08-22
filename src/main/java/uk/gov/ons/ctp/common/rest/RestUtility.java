@@ -60,8 +60,8 @@ public class RestUtility {
   }
 
   /**
-   * Creates a {@link HttpEntity} with basic auth header and application/json set for
-   * Content-Type and Accept
+   * Creates a {@link HttpEntity} with basic auth header and application/json set for Content-Type
+   * and Accept
    *
    * @param <H> generic passed in for body content
    * @return HttpEntity containing object as JSON

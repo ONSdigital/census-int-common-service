@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.common.distributed;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RLock;
@@ -16,9 +17,11 @@ import org.redisson.api.RedissonClient;
  *
  * @param <T> our thing type
  */
-@Slf4j
 public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBase
     implements DistributedListManager<T> {
+
+  private static final Logger log =
+      LoggerFactory.getLogger(DistributedListManagerRedissonImpl.class);
 
   private static final String LOCK_KEY = "lock";
   private Integer timeToWait;
@@ -46,8 +49,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   @Override
   public void saveList(String key, List<T> list, boolean unlock) throws LockingException {
     if (!containerIsLockedByCurrentThread()) {
-      String msg =
-          String.format("DistributedList lock must be held by current thread before saving");
+      String msg = "DistributedList lock must be held by current thread before saving";
       throw new LockingException(msg);
     }
     RBucket<List<T>> bucket = redissonClient.getBucket(createKey(key));
@@ -96,7 +98,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   public void lockContainer() throws LockingException {
     boolean locked = false;
     String lockName = createGlobalKey(LOCK_KEY);
-    log.debug("Attempting to obtain lock on {}", lockName);
+    log.with("lock_name", lockName).debug("Attempting to obtain lock");
     RLock lock = redissonClient.getFairLock(lockName);
     if (lock != null) {
       try {
@@ -109,7 +111,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
       String msg = String.format("Failed to obtain lock %s", lockName);
       throw new LockingException(msg);
     }
-    log.debug("Succeeded to obtain lock on {}", lockName);
+    log.with("lock_name", lockName).debug("Succeeded to obtain lock on");
   }
 
   @Override
@@ -122,7 +124,7 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
   @Override
   public void unlockContainer() throws LockingException {
     String lockName = createGlobalKey(LOCK_KEY);
-    log.debug("Attempting to relinquish lock on {}", lockName);
+    log.with("lock_name", lockName).debug("Attempting to relinquish lock");
     RLock lock = redissonClient.getFairLock(lockName);
     if (lock != null && lock.isHeldByCurrentThread()) {
       lock.unlock();
@@ -130,6 +132,6 @@ public class DistributedListManagerRedissonImpl<T> extends DistributedManagerBas
       String msg = String.format("Failed to unlock %s", lockName);
       throw new LockingException(msg);
     }
-    log.debug("Succeeded to relinquish lock on {}", lockName);
+    log.with("lock_name", lockName).debug("Succeeded to relinquish lock");
   }
 }

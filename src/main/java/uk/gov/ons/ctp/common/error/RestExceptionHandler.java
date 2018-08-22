@@ -1,14 +1,12 @@
 package uk.gov.ons.ctp.common.error;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import lombok.extern.slf4j.Slf4j;
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
+import java.util.stream.Collectors;
 import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,8 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /** Rest Exception Handler */
 @CoverageIgnore
 @ControllerAdvice
-@Slf4j
 public class RestExceptionHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
   public static final String INVALID_JSON = "Provided json fails validation.";
   public static final String PROVIDED_JSON_INCORRECT = "Provided json is incorrect.";
@@ -34,8 +33,9 @@ public class RestExceptionHandler {
    */
   @ExceptionHandler(CTPException.class)
   public ResponseEntity<?> handleCTPException(CTPException exception) {
-    log.error("handleCTPException");
-    log.error(exception.toString(), exception);
+    log.with("fault", exception.getFault())
+        .with("exception_message", exception.getMessage())
+        .error("Uncaught CTPException", exception);
 
     HttpStatus status;
     switch (exception.getFault()) {
@@ -54,7 +54,6 @@ public class RestExceptionHandler {
         break;
       case SYSTEM_ERROR:
         status = HttpStatus.INTERNAL_SERVER_ERROR;
-        log.error("Internal System Error", exception);
         break;
       default:
         status = HttpStatus.I_AM_A_TEAPOT;
@@ -72,7 +71,7 @@ public class RestExceptionHandler {
    */
   @ExceptionHandler(Throwable.class)
   public ResponseEntity<?> handleGeneralException(Throwable t) {
-    log.error("handleGeneralException {}", t);
+    log.error("Uncaught Throwable", t);
     return new ResponseEntity<>(
         new CTPException(CTPException.Fault.SYSTEM_ERROR, t, t.getMessage()),
         HttpStatus.INTERNAL_SERVER_ERROR);
@@ -81,28 +80,22 @@ public class RestExceptionHandler {
   /**
    * Handler for Invalid Request Exceptions
    *
-   * @param ex Invalid Request Exception
-   * @param locale Locale
    * @return ResponseEntity containing CTPException
    */
   @ResponseBody
   @ExceptionHandler(InvalidRequestException.class)
-  public ResponseEntity<?> handleInvalidRequestException(
-      InvalidRequestException ex, Locale locale) {
-    log.error("handleInvalidRequestException {}", ex);
-    StringBuilder logMsg = new StringBuilder(ex.getSourceMessage());
+  public ResponseEntity<?> handleInvalidRequestException(InvalidRequestException ex) {
 
-    StringBuilder responseMsg = new StringBuilder();
-    List<FieldError> fieldErrors = ex.getErrors().getFieldErrors();
-    for (Iterator<FieldError> errorsIte = fieldErrors.listIterator(); errorsIte.hasNext(); ) {
-      FieldError fieldError = errorsIte.next();
-      responseMsg.append(fieldError.getDefaultMessage());
-      if (errorsIte.hasNext()) {
-        responseMsg.append(",");
-      }
-    }
+    String errors =
+        ex.getErrors()
+            .getFieldErrors()
+            .stream()
+            .map(e -> String.format("field=%s message=%s", e.getField(), e.getDefaultMessage()))
+            .collect(Collectors.joining(","));
 
-    log.error("logMsg is '{}' - responseMsg is '{}'", logMsg.toString(), responseMsg.toString());
+    log.with("validation_errors", errors)
+        .with("source_message", ex.getSourceMessage())
+        .error("Unhandled InvalidRequestException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -112,19 +105,18 @@ public class RestExceptionHandler {
    * Handles Http Message Not Readable Exception
    *
    * @param ex exception
-   * @param locale locale to use
    * @return ResponseEntity containing exception and BAD_REQUEST http status
    */
   @ResponseBody
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<?> handleHttpMessageNotReadableException(
-      HttpMessageNotReadableException ex, Locale locale) {
-    log.error("handleHttpMessageNotReadableException {}", ex);
-
+      HttpMessageNotReadableException ex) {
+    log.error("Uncaught HttpMessageNotReadableException", ex);
     String message =
         ex.getMessage().startsWith(XML_ERROR_MESSAGE)
             ? PROVIDED_XML_INCORRECT
             : PROVIDED_JSON_INCORRECT;
+
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -134,14 +126,14 @@ public class RestExceptionHandler {
    * Handles Method Argument not valid Exception
    *
    * @param ex exception
-   * @param locale locale to use
    * @return ResponseEntity containing exception and BAD_REQUEST http status
    */
   @ResponseBody
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
-      MethodArgumentNotValidException ex, Locale locale) {
-    log.error("handleMethodArgumentNotValidException {}", ex);
+      MethodArgumentNotValidException ex) {
+    log.with("parameter", ex.getParameter().getParameterName())
+        .error("Uncaught MethodArgumentNotValidException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);

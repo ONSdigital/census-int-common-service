@@ -36,7 +36,7 @@ public class CTPException extends Exception {
     /** For access denied */
     ACCESS_DENIED,
     /** For bad requests */
-    BAD_REQUEST
+    BAD_REQUEST;
   }
 
   private Fault fault;

@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.time;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,15 +10,15 @@ import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Centralized DateTime handling for CTP */
 @CoverageIgnore
-@Slf4j
 public class DateTimeUtil {
 
   public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
+  private static final Logger log = LoggerFactory.getLogger(DateTimeUtil.class);
 
   /**
    * Looks like overkill I know - but this ensures that we consistently stamp model objects with UTC
@@ -76,8 +78,7 @@ public class DateTimeUtil {
       gregorianCalendar.setTime(date);
       result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     } catch (ParseException e) {
-      log.error(String.format("%s - %s", e.getCause(), e.getMessage()));
-      log.error("Stack trace: " + e);
+      log.error("Failed to parse date", e);
       result = DateTimeUtil.giveMeCalendarForNow();
     }
 

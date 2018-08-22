@@ -1,9 +1,10 @@
 package uk.gov.ons.ctp.common.util;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.xml.transform.stream.StreamResult;
-import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.oxm.Marshaller;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -17,8 +18,9 @@ import uk.gov.ons.ctp.common.error.CTPException;
  * @param <X> the type that the lambda will consume
  */
 @CoverageIgnore
-@Slf4j
 public class DeadLetterLogCommand<X> {
+
+  private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);
 
   private X thingToMarshal;
   private Marshaller marshaller;
@@ -57,12 +59,10 @@ public class DeadLetterLogCommand<X> {
     } catch (Throwable t) {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
         marshaller.marshal(thingToMarshal, new StreamResult(baos));
-        log.error("Dead Letter Log Exception: {}", t);
-        log.error("Dead Letter Log Content: {}", baos.toString());
+        log.with("content", baos).error("Failed to execute", t);
       } catch (IOException ioe) {
         // we cannot marshal it to xml, so last ditch .. toString()
-        log.error("Tried but failed to Dead Letter Log : {}", thingToMarshal);
-        log.error("Stack trace: " + ioe);
+        log.with("content", thingToMarshal).error("Failed to marshel", ioe);
       }
     }
   }

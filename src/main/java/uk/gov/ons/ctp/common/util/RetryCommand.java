@@ -1,8 +1,9 @@
 package uk.gov.ons.ctp.common.util;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.cobertura.CoverageIgnore;
 import uk.gov.ons.ctp.common.error.CTPException;
 
@@ -14,14 +15,13 @@ import uk.gov.ons.ctp.common.error.CTPException;
  * @param <T> the type that the lambda will supply as return
  */
 @CoverageIgnore
-@Slf4j
 public class RetryCommand<T> {
 
-  public static final String MAX_RETRIES_EXCEEDED =
-      "Max retries exceeded. cause = %s - message = %s";
+  private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);
+
   public static final String ERROR_HANDLER_ERROR =
-      "FAILED - Command aborted on advice of errorHandler with error: "
-          + "cause = %s - message = %s";
+      "FAILED - Command aborted on advice of errorHandler";
+  public static final String MAX_RETRIES_EXCEEDED = "Max retries exceeded";
 
   private int maxRetries;
   private int retryPause;
@@ -76,26 +76,26 @@ public class RetryCommand<T> {
       } catch (Exception ex) {
         if (errorHandler.test(ex)) {
           retryCount++;
-          log.info(
-              "FAILED - Command failed on retry {} of {} error: {}", retryCount, maxRetries, ex);
+          log.with("retry_count", retryCount)
+              .with("max_retries", maxRetries)
+              .info("FAILED - Command failed on retry", ex);
 
           if (retryCount >= maxRetries) {
-            String msg = String.format(MAX_RETRIES_EXCEEDED, ex.getCause(), ex.getMessage());
-            log.warn(msg, ex);
-            throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, msg);
+            log.with("retry_count", retryCount)
+                .with("max_retries", maxRetries)
+                .warn(MAX_RETRIES_EXCEEDED);
+            throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, MAX_RETRIES_EXCEEDED);
           }
 
           try {
             Thread.sleep(retryPause);
           } catch (InterruptedException ie) {
             log.warn(
-                "Unexpected retry pause interrupted - in the interests of resilience,"
-                    + " carrying on.");
+                "Unexpected retry pause interrupted, in the interests of resilience, carrying on.");
           }
         } else {
-          String msg = String.format(ERROR_HANDLER_ERROR, ex.getCause(), ex.getMessage());
-          log.info(msg, ex);
-          throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, msg);
+          log.info(ERROR_HANDLER_ERROR, ex);
+          throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, ERROR_HANDLER_ERROR);
         }
       }
     }

@@ -7,6 +7,7 @@ before_install:
     git checkout $TRAVIS_BRANCH;
     fi
   - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - mvn fmt:check
   - curl ifconfig.co|xargs echo "Travis IP address is ";
   - export TZ=Europe/London
 
