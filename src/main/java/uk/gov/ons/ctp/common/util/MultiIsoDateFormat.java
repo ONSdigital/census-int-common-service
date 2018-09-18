@@ -21,7 +21,6 @@ public class MultiIsoDateFormat extends AggregatedDateFormat {
     DateFormat format3 = new SimpleDateFormat(ISO_FORMAT_3);
     DateFormat[] formats = {format1, format2, format3};
 
-
     init(format1, formats);
   }
 }
