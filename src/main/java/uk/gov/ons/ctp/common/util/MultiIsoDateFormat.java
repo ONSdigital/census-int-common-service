@@ -16,11 +16,14 @@ public class MultiIsoDateFormat extends AggregatedDateFormat {
 
   /** Default constructor */
   public MultiIsoDateFormat() {
-    DateFormat format1 = new SimpleDateFormat(ISO_FORMAT_1);
-    DateFormat format2 = new SimpleDateFormat(ISO_FORMAT_2);
-    DateFormat format3 = new SimpleDateFormat(ISO_FORMAT_3);
-    DateFormat[] formats = {format1, format2, format3};
+    DateFormat outputFormat = new SimpleDateFormat(ISO_FORMAT_3);
 
-    init(format1, formats);
+    DateFormat inputFormat1 = new SimpleDateFormat(ISO_FORMAT_1);
+    DateFormat inputFormat2 = new SimpleDateFormat(ISO_FORMAT_2);
+    DateFormat inputFormat3 = new SimpleDateFormat(ISO_FORMAT_3);
+
+    DateFormat[] inputFormats = {inputFormat1, inputFormat2, inputFormat3};
+
+    init(outputFormat, inputFormats);
   }
 }
