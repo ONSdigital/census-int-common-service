@@ -21,7 +21,7 @@ public class AggregatedDateFormat extends DateFormat {
   private DateFormat[] inputFormats;
   private DateFormat outputFormat;
 
-  public AggregatedDateFormat(final DateFormat outputFormat, final DateFormat[] inputFormats) {
+  public void init(final DateFormat outputFormat, final DateFormat[] inputFormats) {
     this.inputFormats = inputFormats;
     this.outputFormat = outputFormat;
   }
@@ -35,7 +35,9 @@ public class AggregatedDateFormat extends DateFormat {
 
   @Override
   public Object clone() {
-    return new AggregatedDateFormat(this.outputFormat, this.inputFormats);
+    AggregatedDateFormat result = new AggregatedDateFormat();
+    result.init(this.outputFormat, this.inputFormats);
+    return result;
   }
 
   @Override

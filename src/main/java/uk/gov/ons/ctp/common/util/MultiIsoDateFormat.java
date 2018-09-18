@@ -10,16 +10,17 @@ import java.text.SimpleDateFormat;
  */
 public class MultiIsoDateFormat extends AggregatedDateFormat {
 
-  private static final DateFormat ISO_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-  private static final DateFormat ISO_FORMAT_2 =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXX");
-  private static final DateFormat ISO_FORMAT_3 =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-
-  private static final DateFormat[] ALL_FORMATS = {ISO_FORMAT_1, ISO_FORMAT_2, ISO_FORMAT_3};
+  private static final String ISO_FORMAT_1 = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+  private static final String ISO_FORMAT_2 = "yyyy-MM-dd'T'HH:mm:ss.SSSXX";
+  private static final String ISO_FORMAT_3 = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
   /** Default constructor */
   public MultiIsoDateFormat() {
-    super(ISO_FORMAT_3, ALL_FORMATS);
+    DateFormat format1 = new SimpleDateFormat(ISO_FORMAT_1);
+    DateFormat format2 = new SimpleDateFormat(ISO_FORMAT_2);
+    DateFormat format3 = new SimpleDateFormat(ISO_FORMAT_3);
+    DateFormat[] formats = {format1, format2, format3};
+
+    init(format1, formats);
   }
 }
