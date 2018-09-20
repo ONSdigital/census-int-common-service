@@ -13,6 +13,10 @@ import java.util.Date;
  * It accepts an array of input formats that are attempted in order when parsing. The value returned
  * by the first input format that successfully parses the date will be returned. This class also
  * contains an output format that is used for formatting dates.
+ *
+ * <p>IMPORTANT: This class has been made THREAD SAFE because DateFormat is not thread safe and
+ * having a date formatter shared between multiple threads causes dates to get mangled when handling
+ * concurrent calls (i.e. 2 or 3 users making simultaneous requests)
  */
 public class AggregatedDateFormat extends DateFormat {
 
@@ -29,20 +33,31 @@ public class AggregatedDateFormat extends DateFormat {
   @Override
   public StringBuffer format(
       final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {
-    log.with("date", date).trace("Formatting date to string");
-    return this.outputFormat.format(date, toAppendTo, fieldPosition);
+    synchronized (outputFormat) {
+      log.with("date", date).trace("Formatting date to string");
+      return outputFormat.format(date, toAppendTo, fieldPosition);
+    }
   }
 
   @Override
   public Object clone() {
     AggregatedDateFormat result = new AggregatedDateFormat();
-    result.init(this.outputFormat, this.inputFormats);
+
+    // Make a DEEP copy of the array
+    DateFormat[] inputFormatsClone = new DateFormat[inputFormats.length];
+    for (int i = 0; i < inputFormats.length; i++) {
+      inputFormatsClone[i] = (DateFormat) inputFormats[i].clone();
+    }
+
+    result.init((DateFormat) outputFormat.clone(), inputFormatsClone);
     return result;
   }
 
   @Override
   public Date parse(final String source, final ParsePosition pos) {
-    log.with("string", source).trace("Parsing string to date");
-    return Arrays.stream(this.inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
+    synchronized (inputFormats) {
+      log.with("string", source).trace("Parsing string to date");
+      return Arrays.stream(inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
+    }
   }
 }
