@@ -13,10 +13,6 @@ import java.util.Date;
  * It accepts an array of input formats that are attempted in order when parsing. The value returned
  * by the first input format that successfully parses the date will be returned. This class also
  * contains an output format that is used for formatting dates.
- *
- * <p>IMPORTANT: This class has been made THREAD SAFE because DateFormat is not thread safe and
- * having a date formatter shared between multiple threads causes dates to get mangled when handling
- * concurrent calls (i.e. 2 or 3 users making simultaneous requests)
  */
 public class AggregatedDateFormat extends DateFormat {
 
@@ -33,10 +29,8 @@ public class AggregatedDateFormat extends DateFormat {
   @Override
   public StringBuffer format(
       final Date date, final StringBuffer toAppendTo, final FieldPosition fieldPosition) {
-    synchronized (outputFormat) {
-      log.with("date", date).trace("Formatting date to string");
-      return outputFormat.format(date, toAppendTo, fieldPosition);
-    }
+    log.with("date", date).trace("Formatting date to string");
+    return outputFormat.format(date, toAppendTo, fieldPosition);
   }
 
   @Override
@@ -55,9 +49,7 @@ public class AggregatedDateFormat extends DateFormat {
 
   @Override
   public Date parse(final String source, final ParsePosition pos) {
-    synchronized (inputFormats) {
-      log.with("string", source).trace("Parsing string to date");
-      return Arrays.stream(inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
-    }
+    log.with("string", source).trace("Parsing string to date");
+    return Arrays.stream(inputFormats).map(d -> d.parse(source, pos)).findFirst().orElse(null);
   }
 }
