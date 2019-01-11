@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.gov.ons.ctp.common</groupId>
+  <groupId>uk.gov.ons.ctp.integration.common</groupId>
   <artifactId>framework</artifactId>
-  <version>10.49.22-SNAPSHOT</version>
+  <version>0.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>CTP : Common Framework</name>
-  <description>CTP : Common Framework</description>
+  <name>CTP : Integration Common Framework</name>
+  <description>CTP : Integration Common Framework</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,9 +17,9 @@
 
   <!-- Inherit parent BOM to control versions of dependencies and plugin version & config -->
   <parent>
-    <groupId>uk.gov.ons.ctp.product</groupId>
-    <artifactId>rm-common-config</artifactId>
-    <version>10.49.13</version>
+    <groupId>uk.gov.ons.ctp.integration</groupId>
+    <artifactId>census-int-common-config</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -64,8 +65,14 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <version>4.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <dependency>
@@ -96,10 +103,12 @@
       <scope>test</scope>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>net.sourceforge.cobertura</groupId>
       <artifactId>cobertura</artifactId>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.springframework.integration</groupId>

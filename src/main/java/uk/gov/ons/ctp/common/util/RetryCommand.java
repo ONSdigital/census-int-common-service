@@ -4,7 +4,7 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.sourceforge.cobertura.CoverageIgnore;
+//import net.sourceforge.cobertura.CoverageIgnore;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
@@ -14,7 +14,7 @@ import uk.gov.ons.ctp.common.error.CTPException;
  *
  * @param <T> the type that the lambda will supply as return
  */
-@CoverageIgnore
+//@CoverageIgnore
 public class RetryCommand<T> {
 
   private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);

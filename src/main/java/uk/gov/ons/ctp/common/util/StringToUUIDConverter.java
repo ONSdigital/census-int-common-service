@@ -4,10 +4,11 @@ import java.util.UUID;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import net.sourceforge.cobertura.CoverageIgnore;
+
+// import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Bi-directional String to UUID Converter */
-@CoverageIgnore
+// @CoverageIgnore
 public class StringToUUIDConverter extends BidirectionalConverter<String, UUID> {
 
   /**

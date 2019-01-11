@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.error;
 
-import net.sourceforge.cobertura.CoverageIgnore;
+// import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.validation.Errors;
 
 /** Invalid Requestion Exception */
-@CoverageIgnore
+// @CoverageIgnore
 public class InvalidRequestException extends Exception {
 
   private Errors errors;
