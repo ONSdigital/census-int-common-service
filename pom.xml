@@ -154,6 +154,20 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+       <configuration>
+          <forkCount>1</forkCount>
+          <reuseForks>true</reuseForks>
+          <!--
+          <argLine>${surefireArgLine}</argLine>
+          <classpathDependencyExcludes>
+              <classpathDependencyExcludes>${project.groupId}:${project.artifactId}</classpathDependencyExcludes>
+          </classpathDependencyExcludes>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+          </additionalClasspathElements>
+          -->
+        </configuration>
+
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
