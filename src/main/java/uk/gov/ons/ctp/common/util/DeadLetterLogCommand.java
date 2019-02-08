@@ -5,7 +5,6 @@ import com.godaddy.logging.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.xml.transform.stream.StreamResult;
-//import net.sourceforge.cobertura.CoverageIgnore;
 import org.springframework.oxm.Marshaller;
 import uk.gov.ons.ctp.common.error.CTPException;
 
@@ -17,7 +16,6 @@ import uk.gov.ons.ctp.common.error.CTPException;
  *
  * @param <X> the type that the lambda will consume
  */
-//@CoverageIgnore
 public class DeadLetterLogCommand<X> {
 
   private static final Logger log = LoggerFactory.getLogger(DeadLetterLogCommand.class);
