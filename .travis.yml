@@ -22,11 +22,11 @@ script:
     fi
 
 notifications:
-  slack:
-    rooms:
-      secure: wadECEy7kUTvXPwyDFujBeRNapu9JBf3D4spDmIRh6zqm3Disy29tj/oYNHqo0BEMsFUhp/EyP97Sk8nHDOHIOtOfx6Y5uWLuYgUxPXX28+ClBqSLI0KWBGNNB5HmJuoeb9w49HOhbIfClLxU8n/vBUdoRQHQTvuL2BFsaLcBesE/AdC3DozkZVT7kwS5s5OYWOxxlk+mCZpXv4Wx77a/5H2bRZg7UH7q7YDCfbXSmUotUyz262ICTkMnM/Ir3VPWRmyyOwplxOkb1qPzvetIvZ0ZC0kVzpDfvnz/G8vLvQLAA5UkfzY51Z+pZSK+aDAxkcroPuAqraL8xmH9mDjDijJIPj46jqanLdezEfy9s+ug8DNozR4kmxhejui+an8kW0PRiv+hrpqZBDuJ4Ce8+cbwrIP9wfFdQxuETgmP28kk1OjX98vMTao3v+1P2N2r3n0FfshJz7tbqcrHt09c7+NBIWkGgM+774VqiiirI2cc2ercMYs/MWYcnahfujfdbWyFMUuwucNdTMGrR6+PHntaFo9QW2W5EvMH4o+wNTua+oKiEORSvdYJ4fNqpyU1LVdyzud2RaEreSqC0VqyMNpYC0/ZRM3mXtlSYwYD/BL4PIYyefsDOKIW71wm29t5btxNML9pVHmjpNIaS6SZ5PM1O2I+U0M/Mfi3SVokHk=
-    on_failure: always
-    on_success: never
+  #slack:
+  #   rooms:
+  #     secure: wadECEy7kUTvXPwyDFujBeRNapu9JBf3D4spDmIRh6zqm3Disy29tj/oYNHqo0BEMsFUhp/EyP97Sk8nHDOHIOtOfx6Y5uWLuYgUxPXX28+ClBqSLI0KWBGNNB5HmJuoeb9w49HOhbIfClLxU8n/vBUdoRQHQTvuL2BFsaLcBesE/AdC3DozkZVT7kwS5s5OYWOxxlk+mCZpXv4Wx77a/5H2bRZg7UH7q7YDCfbXSmUotUyz262ICTkMnM/Ir3VPWRmyyOwplxOkb1qPzvetIvZ0ZC0kVzpDfvnz/G8vLvQLAA5UkfzY51Z+pZSK+aDAxkcroPuAqraL8xmH9mDjDijJIPj46jqanLdezEfy9s+ug8DNozR4kmxhejui+an8kW0PRiv+hrpqZBDuJ4Ce8+cbwrIP9wfFdQxuETgmP28kk1OjX98vMTao3v+1P2N2r3n0FfshJz7tbqcrHt09c7+NBIWkGgM+774VqiiirI2cc2ercMYs/MWYcnahfujfdbWyFMUuwucNdTMGrR6+PHntaFo9QW2W5EvMH4o+wNTua+oKiEORSvdYJ4fNqpyU1LVdyzud2RaEreSqC0VqyMNpYC0/ZRM3mXtlSYwYD/BL4PIYyefsDOKIW71wm29t5btxNML9pVHmjpNIaS6SZ5PM1O2I+U0M/Mfi3SVokHk=
+  #   on_failure: always
+  #   on_success: never
 
 cache:
   directories:
