@@ -19,7 +19,7 @@
   <parent>
     <groupId>uk.gov.ons.ctp.integration</groupId>
     <artifactId>census-int-common-config</artifactId>
-    <version>0.0.0</version>
+    <version>0.0.3</version>
   </parent>
 
   <dependencies>
