@@ -40,12 +40,12 @@
 
     <servers>
         <server>
-            <username>travis</username>
+            <username>build</username>
             <password>${env.ARTIFACTORY_PASSWORD}</password>
             <id>central</id>
         </server>
         <server>
-            <username>travis</username>
+            <username>build</username>
             <password>${env.ARTIFACTORY_PASSWORD}</password>
             <id>snapshots</id>
         </server>
