@@ -13,7 +13,7 @@ import org.springframework.security.crypto.codec.Base64;
 public class RestUtilityTest {
 
   private RestUtility restUtility =
-      new RestUtility(RestUtilityConfig.builder().username("user").password("password").build());
+      new RestUtility(RestClientConfig.builder().username("user").password("password").build());
 
   @Test
   public void shouldAddAuthorizationHeaderWhenCreateHttpEntityWithAuthHeader() {

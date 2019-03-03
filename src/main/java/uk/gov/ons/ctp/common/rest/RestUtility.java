@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.rest;
 
 import java.nio.charset.Charset;
+import java.util.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
@@ -14,11 +14,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class RestUtility {
 
-  private RestUtilityConfig config;
+  private RestClientConfig config;
 
   /** Construct with no details of the server - will use the default provided by RestClientConfig */
   public RestUtility() {
-    this.config = new RestUtilityConfig();
+    this.config = new RestClientConfig();
   }
 
   /**
@@ -26,7 +26,7 @@ public class RestUtility {
    *
    * @param clientConfig the configuration
    */
-  public RestUtility(RestUtilityConfig clientConfig) {
+  public RestUtility(RestClientConfig clientConfig) {
     this.config = clientConfig;
   }
 
@@ -89,7 +89,7 @@ public class RestUtility {
 
     if (this.config.getUsername() != null && this.config.getPassword() != null) {
       String auth = this.config.getUsername() + ":" + this.config.getPassword();
-      byte[] encodedAuth = Base64.encode(auth.getBytes(Charset.forName("US-ASCII")));
+      byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(Charset.forName("US-ASCII")));
       String authHeader = "Basic " + new String(encodedAuth);
       headers.set("Authorization", authHeader);
     }
