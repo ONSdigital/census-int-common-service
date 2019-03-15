@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.error;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -77,16 +77,18 @@ public class RestExceptionHandler {
   }
 
   /**
-   * Handler for MethodArgumentTypeMismatchExceptions
-   * Thrown when spring attempts to convert path param values into declared endpoint method params
+   * Handler for MethodArgumentTypeMismatchExceptions Thrown when spring attempts to convert path
+   * param values into declared endpoint method params
    *
    * @return ResponseEntity containing CTPException
    */
   @ResponseBody
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+  public ResponseEntity<?> handleMethodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException ex) {
 
-    String errors = String.format("field=%s value=%s message=%s", ex.getName(), ex.getValue(), ex.getMessage());
+    String errors =
+        String.format("field=%s value=%s message=%s", ex.getName(), ex.getValue(), ex.getMessage());
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getRootCause())

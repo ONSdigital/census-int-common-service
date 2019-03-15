@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.integration.common</groupId>
@@ -15,7 +17,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-  <!-- Inherit parent BOM to control versions of dependencies and plugin version & config -->
+  <!-- Inherit parent BOM to control versions of dependencies and plugin 
+    version & config -->
   <parent>
     <groupId>uk.gov.ons.ctp.integration</groupId>
     <artifactId>census-int-common-config</artifactId>
@@ -71,8 +74,8 @@
     </dependency>
 
     <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <dependency>
@@ -103,12 +106,8 @@
       <scope>test</scope>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>net.sourceforge.cobertura</groupId>
-      <artifactId>cobertura</artifactId>
-    </dependency>
-    -->
+    <!-- <dependency> <groupId>net.sourceforge.cobertura</groupId> <artifactId>cobertura</artifactId> 
+      </dependency> -->
 
     <dependency>
       <groupId>org.springframework.integration</groupId>
@@ -147,6 +146,19 @@
     <defaultGoal>clean install</defaultGoal>
 
     <plugins>
+
+      <plugin>
+        <groupId>com.coveo</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -154,7 +166,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-       <configuration>
+        <configuration>
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
         </configuration>
@@ -163,10 +175,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
-          <groupId>com.coveo</groupId>
-          <artifactId>fmt-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
