@@ -59,9 +59,7 @@ public class RestClient {
   /**
    * Construct with the core details of the server
    *
-   * @param theScheme http or https
-   * @param theHost hostname of the server
-   * @param thePort the port the service will be running on
+   * @param clientConfig the config this client should use
    */
   public RestClient(RestClientConfig clientConfig) {
     super();
@@ -165,7 +163,7 @@ public class RestClient {
    *
    * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie "/cases/{caseid}"
-   * @param clazz the class type of the resource, a List<> of which is to be obtained
+   * @param clazz the class type of the resource, a List of which is to be obtained
    * @param pathParams vargs list of params to substitute in the path - note simply used in order
    * @return a list of the type you asked for
    * @throws RestClientException something went wrong making http call
@@ -180,7 +178,7 @@ public class RestClient {
    *
    * @param <T> the type that will returned by the server we call
    * @param path the API path - can contain path params place holders in "{}" ie "/cases/{caseid}"
-   * @param clazz the array class type of the resource, a List<> of which is to be obtained
+   * @param clazz the array class type of the resource, a List of which is to be obtained
    * @param headerParams map of header of params to be used - can be null
    * @param queryParams multi map of query params keyed by string logically allows for
    *     K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"

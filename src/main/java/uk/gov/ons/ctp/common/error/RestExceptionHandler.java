@@ -80,6 +80,7 @@ public class RestExceptionHandler {
    * Handler for MethodArgumentTypeMismatchExceptions Thrown when spring attempts to convert path
    * param values into declared endpoint method params
    *
+   * @param ex the exception we are handling
    * @return ResponseEntity containing CTPException
    */
   @ResponseBody
@@ -101,6 +102,7 @@ public class RestExceptionHandler {
   /**
    * Handler for Invalid Request Exceptions
    *
+   * @param ex the exception we are handling
    * @return ResponseEntity containing CTPException
    */
   @ResponseBody
