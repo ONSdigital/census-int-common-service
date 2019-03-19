@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -76,8 +77,32 @@ public class RestExceptionHandler {
   }
 
   /**
+   * Handler for MethodArgumentTypeMismatchExceptions Thrown when spring attempts to convert path
+   * param values into declared endpoint method params
+   *
+   * @param ex the exception we are handling
+   * @return ResponseEntity containing CTPException
+   */
+  @ResponseBody
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<?> handleMethodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException ex) {
+
+    String errors =
+        String.format("field=%s value=%s message=%s", ex.getName(), ex.getValue(), ex.getMessage());
+
+    log.with("validation_errors", errors)
+        .with("source_message", ex.getRootCause())
+        .error("Unhandled MethodArgumentTypeMismatchException", ex);
+    CTPException ourException =
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+    return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
    * Handler for Invalid Request Exceptions
    *
+   * @param ex the exception we are handling
    * @return ResponseEntity containing CTPException
    */
   @ResponseBody

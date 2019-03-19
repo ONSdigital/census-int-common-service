@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.integration.common</groupId>
   <artifactId>framework</artifactId>
-  <version>0.0.8-SNAPSHOT</version>
+  <version>0.0.11-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>CTP : Integration Common Framework</name>
@@ -15,11 +15,12 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
-  <!-- Inherit parent BOM to control versions of dependencies and plugin version & config -->
+  <!-- Inherit parent BOM to control versions of dependencies and plugin 
+    version & config -->
   <parent>
     <groupId>uk.gov.ons.ctp.integration</groupId>
     <artifactId>census-int-common-config</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.6</version>
   </parent>
 
   <dependencies>
@@ -71,8 +72,8 @@
     </dependency>
 
     <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <dependency>
@@ -103,12 +104,8 @@
       <scope>test</scope>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>net.sourceforge.cobertura</groupId>
-      <artifactId>cobertura</artifactId>
-    </dependency>
-    -->
+    <!-- <dependency> <groupId>net.sourceforge.cobertura</groupId> <artifactId>cobertura</artifactId> 
+      </dependency> -->
 
     <dependency>
       <groupId>org.springframework.integration</groupId>
@@ -147,6 +144,19 @@
     <defaultGoal>clean install</defaultGoal>
 
     <plugins>
+
+      <plugin>
+        <groupId>com.coveo</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -154,7 +164,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-       <configuration>
+        <configuration>
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
         </configuration>
@@ -163,10 +173,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-      <plugin>
-          <groupId>com.coveo</groupId>
-          <artifactId>fmt-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

@@ -1,31 +1,25 @@
 package uk.gov.ons.ctp.common.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
-import java.net.UnknownHostException;
 import java.util.List;
-import org.junit.Before;
+import java.util.Map;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 /** Test the RestClient class */
 public class RestClientTest {
-
-  @Before
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   /** A test */
   @Test
@@ -34,10 +28,8 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels/42"))
-        .andExpect(method(HttpMethod.PUT))
-        .andRespond(withSuccess());
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.PUT)).andRespond(withSuccess());
 
     FakeDTO fakeDTO = new FakeDTO("blue", 52);
     restClient.putResource("/hotels/{hotelId}", fakeDTO, FakeDTO.class, "42");
@@ -53,10 +45,8 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels/42"))
-        .andExpect(method(HttpMethod.POST))
-        .andRespond(withSuccess());
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.POST)).andRespond(withSuccess());
 
     FakeDTO fakeDTO = new FakeDTO("blue", 52);
     restClient.postResource("/hotels/{hotelId}", fakeDTO, FakeDTO.class, "42");
@@ -64,25 +54,14 @@ public class RestClientTest {
   }
 
   /**
-   * Test that we get an underlying UnknownHostException when we ask for a connection to a non
-   * resolvable host
-   *
-   * @throws Throwable
+   * Test that we get a failure when we ask for a connection to a non resolvable host
    */
-  @Test(expected = UnknownHostException.class)
-  public void testGetTimeoutURLInvalid() throws Throwable {
-    RestClientConfig config =
-        RestClientConfig.builder()
-            .scheme("http")
-            .host("phil.whiles.for.president.com")
-            .port("80")
-            .build();
+  @Test(expected = ResponseStatusException.class)
+  public void testGetTimeoutURLInvalid() {
+    RestClientConfig config = RestClientConfig.builder().scheme("http")
+        .host("phil.whiles.for.president.com").port("80").build();
     RestClient restClient = new RestClient(config);
-    try {
-      restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
-    } catch (ResourceAccessException rae) {
-      throw rae.getCause();
-    }
+    restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
   }
 
   /** A test */
@@ -92,12 +71,9 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels/42"))
-        .andExpect(method(HttpMethod.GET))
-        .andRespond(
-            withSuccess(
-                "{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"}", MediaType.APPLICATION_JSON));
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.GET)).andRespond(withSuccess(
+            "{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"}", MediaType.APPLICATION_JSON));
 
     FakeDTO fakeDTO = restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
     assertTrue(fakeDTO != null);
@@ -107,48 +83,97 @@ public class RestClientTest {
   }
 
   /** A test */
-  @Test(expected = RestClientException.class)
-  public void testGetResourceReallyNotOk() {
-    RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
-    RestClient restClient = new RestClient(config);
+  @Test
+  public void testGetResourceFailsWithInvalidJsonResponse() {
+    RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.GET)).andRespond(
+            withSuccess("{ \"invalid-json\" ! payload %^#%%%! }", MediaType.APPLICATION_JSON));
 
-    for (int i = 0; i < 3; i++) {
-      mockServer
-          .expect(requestTo("http://localhost:8080/hotels/42"))
-          .andExpect(method(HttpMethod.GET))
-          .andRespond(withStatus(HttpStatus.CONFLICT));
+    try {
+      restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
+      fail();
+    } catch (ResponseStatusException e) {
+      mockServer.verify();
+      assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatus());
     }
+  }
 
-    restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
+  /**
+   * A test in which the fake service responds with an error status, but that status is not remapped
+   * as there is no matching entry in the mapping table.
+   */
+  @Test
+  public void testGetResourceFailsWithUnmappedError() {
+    RestClientConfig config =
+        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
+    Map<HttpStatus, HttpStatus> errorMappings =
+        Map.of(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, HttpStatus.I_AM_A_TEAPOT);
+    RestClient restClient = new RestClient(config, errorMappings);
+
+    RestTemplate restTemplate = restClient.getRestTemplate();
+    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.CONFLICT));
+
+    try {
+      restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
+      fail();
+    } catch (ResponseStatusException e) {
+      mockServer.verify();
+      assertEquals(HttpStatus.CONFLICT, e.getStatus());
+    }
+  }
+
+  /**
+   * A test in which the fake service fails, as it does in the previous test, but this time the
+   * RestClient should match an error mapping rule
+   */
+  @Test
+  public void testGetResourceFailsWithMappedError() {
+    RestClientConfig config =
+        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
+    Map<HttpStatus, HttpStatus> errorMappings =
+        Map.of(HttpStatus.CONFLICT, HttpStatus.I_AM_A_TEAPOT);
+    RestClient restClient = new RestClient(config, errorMappings);
+
+    RestTemplate restTemplate = restClient.getRestTemplate();
+    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.CONFLICT));
+
+    try {
+      restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
+      fail();
+    } catch (ResponseStatusException e) {
+      mockServer.verify();
+      assertEquals(HttpStatus.I_AM_A_TEAPOT, e.getStatus());
+    }
   }
 
   /** A test */
-  @Test(expected = RestClientException.class)
+  @Test
   public void testGetResourceNotFound() {
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
     RestClient restClient = new RestClient(config);
-    ;
+
     RestTemplate restTemplate = restClient.getRestTemplate();
-
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    for (int i = 0; i < 3; i++) {
-      mockServer
-          .expect(requestTo("http://localhost:8080/hotels/42"))
-          .andExpect(method(HttpMethod.GET))
-          .andRespond(
-              withStatus(HttpStatus.NOT_FOUND)
-                  .body(
-                      "{ \"error\" :{  \"code\" : \"123\", \"message\" : \"123\", \"timestamp\" : \"123\"}}"));
-    }
+    mockServer.expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.GET)).andRespond(withStatus(HttpStatus.NOT_FOUND).body(
+            "{ \"error\" :{  \"code\" : \"123\", \"message\" : \"123\", \"timestamp\" : \"123\"}}"));
 
-    FakeDTO fakeDTO = restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
-    assertTrue(fakeDTO == null);
-    mockServer.verify();
+    try {
+      restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
+      fail();
+    } catch (ResponseStatusException e) {
+      mockServer.verify();
+      assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+    }
   }
 
   /** A test */
@@ -158,13 +183,10 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels"))
-        .andExpect(method(HttpMethod.GET))
-        .andRespond(
-            withSuccess(
-                "[{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"},{ \"hairColor\" : \"brown\", \"shoeSize\" : \"12\"}]",
-                MediaType.APPLICATION_JSON));
+    mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(
+            "[{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"},{ \"hairColor\" : \"brown\", \"shoeSize\" : \"12\"}]",
+            MediaType.APPLICATION_JSON));
 
     List<FakeDTO> fakeDTOs = restClient.getResources("/hotels", FakeDTO[].class);
     assertTrue(fakeDTOs != null);
@@ -179,9 +201,7 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels"))
-        .andExpect(method(HttpMethod.GET))
+    mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
         .andRespond(withStatus(HttpStatus.NO_CONTENT));
 
     List<FakeDTO> fakeDTOs = restClient.getResources("/hotels", FakeDTO[].class);
@@ -199,28 +219,22 @@ public class RestClientTest {
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    for (int i = 0; i < 3; i++) {
-      mockServer
-          .expect(requestTo("http://localhost:8080/hotels"))
-          .andExpect(method(HttpMethod.GET))
-          .andRespond(withStatus(HttpStatus.BAD_REQUEST));
-    }
+    mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
+        .andRespond(withStatus(HttpStatus.BAD_REQUEST));
 
     restClient.getResources("/hotels", FakeDTO[].class);
   }
 
   /** A test */
   @Test(expected = RestClientException.class)
-  public void testGetResourceUnauthorized() {
+  public void testGetResourcesUnauthorized() {
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
     RestClient restClient = new RestClient(config);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels"))
-        .andExpect(method(HttpMethod.GET))
+    mockServer.expect(requestTo("http://localhost:8080/hotels")).andExpect(method(HttpMethod.GET))
         .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
 
     restClient.getResources("/hotels", FakeDTO[].class);
