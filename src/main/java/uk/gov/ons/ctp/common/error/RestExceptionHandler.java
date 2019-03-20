@@ -1,16 +1,19 @@
 package uk.gov.ons.ctp.common.error;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -94,6 +97,69 @@ public class RestExceptionHandler {
     log.with("validation_errors", errors)
         .with("source_message", ex.getRootCause())
         .error("Unhandled MethodArgumentTypeMismatchException", ex);
+    CTPException ourException =
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+    return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handler for Invalid Request Exceptions
+   *
+   * @param ex the exception we are handling
+   * @return ResponseEntity containing CTPException
+   */
+  @ResponseBody
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<?> handleMissingServletRequestParameterException(
+      MissingServletRequestParameterException ex) {
+
+    String errors = String.format("field=%s message=%s", ex.getParameterName(), ex.getMessage());
+
+    log.with("validation_errors", errors)
+        .with("source_message", ex.getMessage())
+        .error("Unhandled MethodArgumentTypeMismatchException", ex);
+    CTPException ourException =
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+    return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handler for Invalid Request Exceptions
+   *
+   * @param ex the exception we are handling
+   * @return ResponseEntity containing CTPException
+   */
+  @ResponseBody
+  @ExceptionHandler(BindException.class)
+  public ResponseEntity<?> handleBindException(
+      BindException ex) {
+
+    String errors = String.format("field=%s message=%s", ex.getFieldError().getField(), ex.getMessage());
+
+    log.with("validation_errors", errors)
+        .with("source_message", ex.getMessage())
+        .error("Unhandled BindException", ex);
+    CTPException ourException =
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+    return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+  
+  /**
+   * Handler for HttpMessageConversionException
+   *
+   * @param ex the exception we are handling
+   * @return ResponseEntity containing CTPException
+   */
+  @ResponseBody
+  @ExceptionHandler(HttpMessageConversionException.class)
+  public ResponseEntity<?> handleHttpMessageConversionException(
+      HttpMessageConversionException ex) {
+
+    String errors = String.format("field=%s message=%s", ex.getMostSpecificCause(), ex.getMessage());
+
+    log.with("validation_errors", errors)
+        .with("source_message", ex.getMessage())
+        .error("Unhandled HttpMessageConversionException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
