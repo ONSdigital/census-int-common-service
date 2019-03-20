@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.error;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +14,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -131,10 +131,10 @@ public class RestExceptionHandler {
    */
   @ResponseBody
   @ExceptionHandler(BindException.class)
-  public ResponseEntity<?> handleBindException(
-      BindException ex) {
+  public ResponseEntity<?> handleBindException(BindException ex) {
 
-    String errors = String.format("field=%s message=%s", ex.getFieldError().getField(), ex.getMessage());
+    String errors =
+        String.format("field=%s message=%s", ex.getFieldError().getField(), ex.getMessage());
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getMessage())
@@ -143,7 +143,7 @@ public class RestExceptionHandler {
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
   }
-  
+
   /**
    * Handler for HttpMessageConversionException
    *
@@ -152,10 +152,10 @@ public class RestExceptionHandler {
    */
   @ResponseBody
   @ExceptionHandler(HttpMessageConversionException.class)
-  public ResponseEntity<?> handleHttpMessageConversionException(
-      HttpMessageConversionException ex) {
+  public ResponseEntity<?> handleHttpMessageConversionException(HttpMessageConversionException ex) {
 
-    String errors = String.format("field=%s message=%s", ex.getMostSpecificCause(), ex.getMessage());
+    String errors =
+        String.format("field=%s message=%s", ex.getMostSpecificCause(), ex.getMessage());
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getMessage())
