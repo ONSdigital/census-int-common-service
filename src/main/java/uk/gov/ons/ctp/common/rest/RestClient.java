@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,39 +40,54 @@ public class RestClient {
 
   @JacksonInject private ObjectMapper objectMapper;
 
-  /**
-   * Our error handler asks this class what constitues an error
-   *
-   * @param status the http status
-   * @return true if an error
-   */
-  public static boolean isError(HttpStatus status) {
-    HttpStatus.Series series = status.series();
-    return (HttpStatus.Series.CLIENT_ERROR.equals(series)
-        || HttpStatus.Series.SERVER_ERROR.equals(series));
+  private Map<HttpStatus, HttpStatus> httpErrorMapping;
+  private HttpStatus httpDefaultStatus;
+
+  private static Map<HttpStatus, HttpStatus> defaultBareBonesErrorMapping;
+
+  static {
+    defaultBareBonesErrorMapping = new HashMap<HttpStatus, HttpStatus>();
+    defaultBareBonesErrorMapping.put(HttpStatus.OK, HttpStatus.OK);
+    defaultBareBonesErrorMapping.put(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
   /** Construct with no details of the server - will use the default RestClientConfig provides */
   public RestClient() {
-    super();
-    this.config = new RestClientConfig();
-    init();
+    this(new RestClientConfig());
+  }
+
+  /**
+   * Constructor which uses no error code mappings.
+   *
+   * @param clientConfig contains data on how to connect to another service.
+   */
+  public RestClient(RestClientConfig clientConfig) {
+    this(clientConfig, defaultBareBonesErrorMapping, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /**
    * Construct with the core details of the server
    *
-   * @param clientConfig the config this client should use
+   * @param clientConfig contains data on how to connect to another service.
+   * @param httpErrorMapping is a table which determines which error code this service should
+   *     respond with following an http error from the delegated service. If a http request fails
+   *     with a status code that is not in the table then the status code is used without any
+   *     translation.
+   * @param httpDefaultStatus if the called service returns a http code which is not in the mapping
+   *     table then this value will be used.
    */
-  public RestClient(RestClientConfig clientConfig) {
-    super();
+  public RestClient(
+      RestClientConfig clientConfig,
+      Map<HttpStatus, HttpStatus> httpErrorMapping,
+      HttpStatus httpDefaultStatus) {
     this.config = clientConfig;
+    this.httpErrorMapping = httpErrorMapping;
+    this.httpDefaultStatus = httpDefaultStatus;
     init();
   }
 
   public void init() {
     restTemplate = new RestTemplate(clientHttpRequestFactory(config));
-    restTemplate.setErrorHandler(new RestClientErrorHandler());
     objectMapper = new ObjectMapper();
   }
 
@@ -117,7 +135,7 @@ public class RestClient {
    *     K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
    * @param pathParams vargs list of params to substitute in the path - note simply used in order
    * @return the type you asked for! or null
-   * @throws RestClientException something went wrong making http call
+   * @throws ResponseStatusException something went wrong making http call
    */
   public <T> T getResource(
       String path,
@@ -125,36 +143,54 @@ public class RestClient {
       Map<String, String> headerParams,
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
-      throws RestClientException {
+      throws ResponseStatusException {
+    log.debug("Enter getResources for path: {}", path);
 
-    log.debug("Enter getResources for path : {}", path);
-
+    // Issue GET request to other service
     HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-    ResponseEntity<String> response =
-        restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class);
-
-    String responseBody = response.getBody();
-    T responseObject = null;
+    ResponseEntity<String> response;
     try {
-      if (isError(response.getStatusCode())) {
-        if (responseBody != null) {
-          RestError error = objectMapper.readValue(responseBody, RestError.class);
-          throw new RestClientException(
-              response.getStatusCode()
-                  + " ["
-                  + error.getError().getCode()
-                  + "] "
-                  + error.getError().getMessage());
-        } else {
-          throw new RestClientException(response.getStatusCode().toString());
-        }
-      } else {
-        responseObject = objectMapper.readValue(responseBody, clazz);
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      response =
+          restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class);
+    } catch (HttpStatusCodeException e) {
+      // Failure detected. For 4xx and 5xx status codes
+      log.error(
+          "GET failed for path: '"
+              + uriComponents
+              + "' Status: "
+              + e.getStatusCode()
+              + " ResponseBody: '"
+              + e.getResponseBodyAsString()
+              + "'",
+          e);
+      throw new ResponseStatusException(
+          mapToExternalStatus(e.getStatusCode()), "Internal processing error");
+    } catch (RestClientException e) {
+      log.error("GET failed for path: '" + uriComponents + "'", e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
     }
+
+    // Convert the response string to a DTO object
+    T responseObject = null;
+    String responseBody = response.getBody();
+    try {
+      responseObject = objectMapper.readValue(responseBody, clazz);
+    } catch (IOException e) {
+      log.error(
+          "Failed to convert respose to DTO object. Path: '"
+              + uriComponents
+              + "' Status: "
+              + response.getStatusCodeValue()
+              + " ResponseBody: '"
+              + responseBody
+              + "'",
+          e);
+      throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
+    }
+
     return responseObject;
   }
 
@@ -390,5 +426,20 @@ public class RestClient {
     }
     HttpEntity<H> httpEntity = new HttpEntity<H>(entity, headers);
     return httpEntity;
+  }
+
+  /**
+   * This method converts a http code from a failed invocation of another service to a http status
+   * that this service should fail with.
+   *
+   * @param originalHttpStatus is the status returned by the other service.
+   * @return the status that this service should fail with.
+   */
+  private HttpStatus mapToExternalStatus(HttpStatus originalHttpStatus) {
+    if (httpErrorMapping.containsKey(originalHttpStatus)) {
+      return httpErrorMapping.get(originalHttpStatus);
+    }
+
+    return httpDefaultStatus;
   }
 }
