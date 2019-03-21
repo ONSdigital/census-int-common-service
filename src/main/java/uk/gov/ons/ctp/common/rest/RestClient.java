@@ -41,10 +41,19 @@ public class RestClient {
   @JacksonInject private ObjectMapper objectMapper;
 
   private Map<HttpStatus, HttpStatus> httpErrorMapping;
+  private HttpStatus httpDefaultStatus;
+
+  private static Map<HttpStatus, HttpStatus> defaultBareBonesErrorMapping;
+
+  static {
+    defaultBareBonesErrorMapping = new HashMap<HttpStatus, HttpStatus>();
+    defaultBareBonesErrorMapping.put(HttpStatus.OK, HttpStatus.OK);
+    defaultBareBonesErrorMapping.put(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND);
+  }
 
   /** Construct with no details of the server - will use the default RestClientConfig provides */
   public RestClient() {
-    this(new RestClientConfig(), new HashMap<>());
+    this(new RestClientConfig());
   }
 
   /**
@@ -53,7 +62,7 @@ public class RestClient {
    * @param clientConfig contains data on how to connect to another service.
    */
   public RestClient(RestClientConfig clientConfig) {
-    this(clientConfig, new HashMap<>());
+    this(clientConfig, defaultBareBonesErrorMapping, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /**
@@ -64,10 +73,16 @@ public class RestClient {
    *     respond with following an http error from the delegated service. If a http request fails
    *     with a status code that is not in the table then the status code is used without any
    *     translation.
+   * @param httpDefaultStatus if the called service returns a http code which is not in the mapping
+   *     table then this value will be used.
    */
-  public RestClient(RestClientConfig clientConfig, Map<HttpStatus, HttpStatus> httpErrorMapping) {
+  public RestClient(
+      RestClientConfig clientConfig,
+      Map<HttpStatus, HttpStatus> httpErrorMapping,
+      HttpStatus httpDefaultStatus) {
     this.config = clientConfig;
     this.httpErrorMapping = httpErrorMapping;
+    this.httpDefaultStatus = httpDefaultStatus;
     init();
   }
 
@@ -425,6 +440,6 @@ public class RestClient {
       return httpErrorMapping.get(originalHttpStatus);
     }
 
-    return originalHttpStatus;
+    return httpDefaultStatus;
   }
 }

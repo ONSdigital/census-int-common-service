@@ -140,7 +140,7 @@ public class RestExceptionHandler {
         .with("source_message", ex.getMessage())
         .error("Unhandled BindException", ex);
     CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, ex.getMessage());
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
   }
 

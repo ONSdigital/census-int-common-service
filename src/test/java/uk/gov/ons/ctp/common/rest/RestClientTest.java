@@ -120,12 +120,16 @@ public class RestClientTest {
    */
   @Test
   public void testGetResourceFailsWithUnmappedError() {
+    HttpStatus defaultHttpStatus = HttpStatus.CHECKPOINT;
+
+    // Setup the client to error mapping that should not be used
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
     Map<HttpStatus, HttpStatus> errorMappings =
         Map.of(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, HttpStatus.I_AM_A_TEAPOT);
-    RestClient restClient = new RestClient(config, errorMappings);
+    RestClient restClient = new RestClient(config, errorMappings, defaultHttpStatus);
 
+    // Get the mocked rest template to fail with an error that is not in the error mapping
     RestTemplate restTemplate = restClient.getRestTemplate();
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
     mockServer
@@ -133,12 +137,13 @@ public class RestClientTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withStatus(HttpStatus.CONFLICT));
 
+    // Invoke the rest client and confirm that the error used is the supplied default
     try {
       restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
       fail();
     } catch (ResponseStatusException e) {
       mockServer.verify();
-      assertEquals(HttpStatus.CONFLICT, e.getStatus());
+      assertEquals(defaultHttpStatus, e.getStatus());
     }
   }
 
@@ -152,8 +157,9 @@ public class RestClientTest {
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
     Map<HttpStatus, HttpStatus> errorMappings =
         Map.of(HttpStatus.CONFLICT, HttpStatus.I_AM_A_TEAPOT);
-    RestClient restClient = new RestClient(config, errorMappings);
+    RestClient restClient = new RestClient(config, errorMappings, HttpStatus.INTERNAL_SERVER_ERROR);
 
+    // Setup the mocked rest template to fail with an error that will me mapped
     RestTemplate restTemplate = restClient.getRestTemplate();
     MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
     mockServer
@@ -161,6 +167,7 @@ public class RestClientTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withStatus(HttpStatus.CONFLICT));
 
+    // Invoke the rest client and confirm it has failed with a remapped error
     try {
       restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
       fail();
