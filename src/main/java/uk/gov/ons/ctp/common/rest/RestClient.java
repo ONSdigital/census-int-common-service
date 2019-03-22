@@ -179,7 +179,7 @@ public class RestClient {
       responseObject = objectMapper.readValue(responseBody, clazz);
     } catch (IOException e) {
       log.error(
-          "Failed to convert respose to DTO object. Path: '"
+          "Failed to convert response to DTO object. Path: '"
               + uriComponents
               + "' Status: "
               + response.getStatusCodeValue()
