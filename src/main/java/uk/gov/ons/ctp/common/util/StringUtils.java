@@ -41,4 +41,26 @@ public class StringUtils {
     }
     return ret;
   }
+
+  /**
+   * This method takes multiple strings and returns the first one which is not null and also not
+   * empty.
+   *
+   * @param candidateStrings, contains 1 or more strings.
+   * @return the first non-null and non-empty String, or an empty string if none of candidateStrings
+   *     are suitable.
+   */
+  public static String selectFirstNonBlankSting(String... candidateStrings) {
+    String preferredString = "";
+
+    // Use the first non empty string
+    for (String candidateString : candidateStrings) {
+      if (candidateString != null && !candidateString.trim().isEmpty()) {
+        preferredString = candidateString.trim();
+        break;
+      }
+    }
+
+    return preferredString;
+  }
 }
