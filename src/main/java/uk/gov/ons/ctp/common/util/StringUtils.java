@@ -53,12 +53,13 @@ public class StringUtils {
    *     are suitable.
    */
   public static String selectFirstNonBlankString(String... candidateStrings) {
-    return Arrays.asList(candidateStrings).stream()
-        .filter(s->!org.apache.commons.lang3.StringUtils.isBlank(s))
+    return Arrays.asList(candidateStrings)
+        .stream()
+        .filter(s -> !org.apache.commons.lang3.StringUtils.isBlank(s))
         .findFirst()
         .orElseGet(() -> "");
   }
-  
+
   public static void main(String[] args) {
     System.out.println("'" + StringUtils.selectFirstNonBlankString("", null) + "'");
   }
