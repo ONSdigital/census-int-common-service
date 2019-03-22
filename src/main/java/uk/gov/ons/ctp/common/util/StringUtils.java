@@ -50,7 +50,7 @@ public class StringUtils {
    * @return the first non-null and non-empty String, or an empty string if none of candidateStrings
    *     are suitable.
    */
-  public static String selectFirstNonBlankSting(String... candidateStrings) {
+  public static String selectFirstNonBlankString(String... candidateStrings) {
     String preferredString = "";
 
     // Use the first non empty string
