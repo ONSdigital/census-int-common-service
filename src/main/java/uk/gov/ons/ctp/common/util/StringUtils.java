@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
+import java.util.Arrays;
+
 // import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Class to collect together some useful string manipulation methods */
@@ -40,5 +42,21 @@ public class StringUtils {
       }
     }
     return ret;
+  }
+
+  /**
+   * This method takes multiple strings and returns the first one which is not null and also not
+   * empty.
+   *
+   * @param candidateStrings, contains 1 or more strings.
+   * @return the first non-null and non-empty String, or an empty string if none of candidateStrings
+   *     are suitable.
+   */
+  public static String selectFirstNonBlankString(String... candidateStrings) {
+    return Arrays.asList(candidateStrings)
+        .stream()
+        .filter(s -> !org.apache.commons.lang3.StringUtils.isBlank(s))
+        .findFirst()
+        .orElseGet(() -> "");
   }
 }
