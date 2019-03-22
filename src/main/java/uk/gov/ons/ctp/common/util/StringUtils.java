@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.util;
 
+import java.util.Arrays;
+
 // import net.sourceforge.cobertura.CoverageIgnore;
 
 /** Class to collect together some useful string manipulation methods */
@@ -51,16 +53,13 @@ public class StringUtils {
    *     are suitable.
    */
   public static String selectFirstNonBlankString(String... candidateStrings) {
-    String preferredString = "";
-
-    // Use the first non empty string
-    for (String candidateString : candidateStrings) {
-      if (candidateString != null && !candidateString.trim().isEmpty()) {
-        preferredString = candidateString.trim();
-        break;
-      }
-    }
-
-    return preferredString;
+    return Arrays.asList(candidateStrings).stream()
+        .filter(s->!org.apache.commons.lang3.StringUtils.isBlank(s))
+        .findFirst()
+        .orElseGet(() -> "");
+  }
+  
+  public static void main(String[] args) {
+    System.out.println("'" + StringUtils.selectFirstNonBlankString("", null) + "'");
   }
 }
