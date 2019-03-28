@@ -15,8 +15,8 @@ script:
   - mvn test -B
   # Only release on master builds
   - if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    git config --global set user.email "travis@travis-ci.org";
-    git config --global set user.name "Travis CI";
+    git config --global user.email "travis@travis-ci.org";
+    git config --global user.name "Travis CI";
     mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
     mvn -B release:perform;
     fi
