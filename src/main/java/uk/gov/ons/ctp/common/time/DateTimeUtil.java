@@ -5,6 +5,8 @@ import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -18,6 +20,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class DateTimeUtil {
 
   public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
+  private static DateTimeFormatter dateTimeFormatterForJson =
+      DateTimeFormatter.ofPattern(DATE_FORMAT_IN_JSON);
 
   private static final Logger log = LoggerFactory.getLogger(DateTimeUtil.class);
 
@@ -84,5 +89,14 @@ public class DateTimeUtil {
     }
 
     return result;
+  }
+
+  /**
+   * Create a String containing the current time formatted for use in JSON.
+   *
+   * @return a String formatted as per DateTimeUtil.DATE_FORMAT_IN_JSON.
+   */
+  public static String getCurrentDateTimeInJsonFormat() {
+    return dateTimeFormatterForJson.format(ZonedDateTime.now());
   }
 }
