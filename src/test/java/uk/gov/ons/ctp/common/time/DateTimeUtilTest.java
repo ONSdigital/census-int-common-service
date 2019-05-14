@@ -25,7 +25,7 @@ public class DateTimeUtilTest {
 
   @Test
   public void testFormatDate() throws ParseException {
-    String testDateAsString = "2014-12-25T07:15:11.628+0000";
+    String testDateAsString = "2014-12-25T07:15:11.628Z";
 
     // Convert test date from string to a Date object
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON);

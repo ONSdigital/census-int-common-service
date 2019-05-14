@@ -21,7 +21,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 // @CoverageIgnore
 public class DateTimeUtil {
 
-  public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+  public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
   private static DateTimeFormatter dateTimeFormatterForJson =
       DateTimeFormatter.ofPattern(DATE_FORMAT_IN_JSON).withZone(ZoneId.systemDefault());
