@@ -102,6 +102,11 @@ public class DateTimeUtil {
     return dateTimeFormatterForJson.format(ZonedDateTime.now());
   }
 
+  /**
+   * Format the supplied Date using the the standard JSON timestamp format (as defined in DATE_FORMAT_IN_JSON) 
+   * @param date is the date to convert to a String.
+   * @return a String containing the date formatted to the standard JSON format.
+   */
   public static String formatDate(Date date) {
     return dateTimeFormatterForJson.format(date.toInstant());
   }
