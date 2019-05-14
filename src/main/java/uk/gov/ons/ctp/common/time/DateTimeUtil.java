@@ -103,7 +103,9 @@ public class DateTimeUtil {
   }
 
   /**
-   * Format the supplied Date using the the standard JSON timestamp format (as defined in DATE_FORMAT_IN_JSON) 
+   * Format the supplied Date using the the standard JSON timestamp format (as defined in
+   * DATE_FORMAT_IN_JSON)
+   *
    * @param date is the date to convert to a String.
    * @return a String containing the date formatted to the standard JSON format.
    */
