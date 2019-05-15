@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import org.junit.Test;
@@ -38,15 +37,32 @@ public class DateTimeUtilTest {
   }
 
   @Test
-  public void testConvertDateToLocalDateTime() {
-    // Get hold of the current date and invoke method under test
-    Date currentDate = new Date();
-    LocalDateTime asLocalDateTime = DateTimeUtil.convertDateToLocalDateTime(currentDate);
+  public void testConvertDateToLocalDateTime_noTimeZoneOffset() throws ParseException {
+    // Create test object
+    String testDateAsString = "2014-12-25T07:15:11.628+0000";
+    Date testDate = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON).parse(testDateAsString);
 
-    // Convert localDataTime back to a Date
-    Date dateFollowingConversion =
-        java.util.Date.from(asLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    // Invoke method under test. Convert to LocalDataTime
+    LocalDateTime asLocalDateTime = DateTimeUtil.convertDateToLocalDateTime(testDate);
 
-    assertEquals(currentDate, dateFollowingConversion);
+    // Format LocalDateTime as string and check
+    String localDateAsString =
+        asLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    assertEquals("2014-12-25T07:15:11.628", localDateAsString);
+  }
+
+  @Test
+  public void testConvertDateToLocalDateTime_withTimeZoneOffset() throws ParseException {
+    // Create test object
+    String testDateAsString = "2014-12-25T07:15:11.628+0100";
+    Date testDate = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON).parse(testDateAsString);
+
+    // Invoke method under test. Convert to LocalDataTime
+    LocalDateTime asLocalDateTime = DateTimeUtil.convertDateToLocalDateTime(testDate);
+
+    // Format LocalDateTime as string and check
+    String localDateAsString =
+        asLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+    assertEquals("2014-12-25T06:15:11.628", localDateAsString); // Note: 6am instead of 7am
   }
 }
