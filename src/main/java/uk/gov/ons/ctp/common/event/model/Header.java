@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.message;
+package uk.gov.ons.ctp.common.event.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
