@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.message;
+package uk.gov.ons.ctp.common.event.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
