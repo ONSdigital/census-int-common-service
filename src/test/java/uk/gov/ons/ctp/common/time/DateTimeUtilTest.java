@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.time;
 
 import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
