@@ -5,7 +5,6 @@ import com.godaddy.logging.LoggerFactory;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +20,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 // @CoverageIgnore
 public class DateTimeUtil {
 
-  public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+  public static final String DATE_FORMAT_IN_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 
   private static DateTimeFormatter dateTimeFormatterForJson =
       DateTimeFormatter.ofPattern(DATE_FORMAT_IN_JSON).withZone(ZoneId.systemDefault());
@@ -111,15 +110,5 @@ public class DateTimeUtil {
    */
   public static String formatDate(Date date) {
     return dateTimeFormatterForJson.format(date.toInstant());
-  }
-
-  /**
-   * Converts a date from a Date object to a LocalDateTime.
-   *
-   * @param date is the date to be converted.
-   * @return the same date value in LocalDateTime format.
-   */
-  public static LocalDateTime convertDateToLocalDateTime(Date date) {
-    return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
   }
 }

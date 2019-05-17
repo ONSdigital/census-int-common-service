@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import org.junit.Test;
@@ -23,46 +22,40 @@ public class DateTimeUtilTest {
   }
 
   @Test
-  public void testFormatDate() throws ParseException {
-    String testDateAsString = "2014-12-25T07:15:11.628Z";
+  public void testFormatDate_winterTime() throws ParseException {
+    Date testDateAsObject = createDate("2014-12-25T07:15:11.628Z");
 
+    String testDateReconstituted = DateTimeUtil.formatDate(testDateAsObject);
+    assertEquals("2014-12-25T07:15:11.628Z", testDateReconstituted);
+  }
+
+  @Test
+  public void testFormatDate_summerTime() throws ParseException {
+    Date testDateAsObject = createDate("2014-05-25T07:15:11.628Z");
+
+    String testDateReconstituted = DateTimeUtil.formatDate(testDateAsObject);
+    assertEquals("2014-05-25T08:15:11.628+01:00", testDateReconstituted);
+  }
+
+  @Test
+  public void testFormatDate_winterWithZoneOffset() throws ParseException {
+    Date testDateAsObject = createDate("2014-12-25T07:15:11.628+03:00");
+
+    String testDateReconstituted = DateTimeUtil.formatDate(testDateAsObject);
+    assertEquals("2014-12-25T04:15:11.628Z", testDateReconstituted);
+  }
+
+  @Test
+  public void testFormatDate_summerWithZoneOffset() throws ParseException {
+    Date testDateAsObject = createDate("2014-05-25T07:15:11.628+03:00");
+
+    String testDateReconstituted = DateTimeUtil.formatDate(testDateAsObject);
+    assertEquals("2014-05-25T05:15:11.628+01:00", testDateReconstituted);
+  }
+
+  private Date createDate(String testDateAsString) throws ParseException {
     // Convert test date from string to a Date object
     SimpleDateFormat dateTimeFormatter = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON);
-    Date testDateAsObject = dateTimeFormatter.parse(testDateAsString);
-
-    // Invoke method under test and confirm that the completed 'String -> Date -> String' cycle
-    // produces the same value that we started with
-    String testDateReconstituted = DateTimeUtil.formatDate(testDateAsObject);
-    assertEquals(testDateAsString, testDateReconstituted);
-  }
-
-  @Test
-  public void testConvertDateToLocalDateTime_noTimeZoneOffset() throws ParseException {
-    // Create test object
-    String testDateAsString = "2014-12-25T07:15:11.628+0000";
-    Date testDate = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON).parse(testDateAsString);
-
-    // Invoke method under test. Convert to LocalDataTime
-    LocalDateTime asLocalDateTime = DateTimeUtil.convertDateToLocalDateTime(testDate);
-
-    // Format LocalDateTime as string and check
-    String localDateAsString =
-        asLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-    assertEquals("2014-12-25T07:15:11.628", localDateAsString);
-  }
-
-  @Test
-  public void testConvertDateToLocalDateTime_withTimeZoneOffset() throws ParseException {
-    // Create test object
-    String testDateAsString = "2014-12-25T07:15:11.628+0100";
-    Date testDate = new SimpleDateFormat(DateTimeUtil.DATE_FORMAT_IN_JSON).parse(testDateAsString);
-
-    // Invoke method under test. Convert to LocalDataTime
-    LocalDateTime asLocalDateTime = DateTimeUtil.convertDateToLocalDateTime(testDate);
-
-    // Format LocalDateTime as string and check
-    String localDateAsString =
-        asLocalDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-    assertEquals("2014-12-25T06:15:11.628", localDateAsString); // Note: 6am instead of 7am
+    return dateTimeFormatter.parse(testDateAsString);
   }
 }
