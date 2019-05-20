@@ -11,6 +11,7 @@ public class FulfilmentRequest {
 
   private String fulfilmentCode;
   private String caseId;
+  private String individualCaseId;
   private Address address = new Address();
   private Contact contact = new Contact();
 }
