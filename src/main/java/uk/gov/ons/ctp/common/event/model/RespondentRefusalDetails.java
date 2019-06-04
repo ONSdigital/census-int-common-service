@@ -14,4 +14,5 @@ public class RespondentRefusalDetails {
   private String agentId;
   private CollectionCaseCompact collectionCase = new CollectionCaseCompact();
   private Contact contact = new Contact();
+  private AddressCompact address = new AddressCompact();
 }
