@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FulfilmentRequest {
+public class FulfilmentRequest implements EventPayload {
 
   private String fulfilmentCode;
   private String caseId;
   private String individualCaseId;
-  private Address address = new Address();
-  private Contact contact = new Contact();
+  private Address address;
+  private Contact contact;
 }

@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RespondentRefusalDetails {
+public class RespondentRefusalDetails implements EventPayload {
 
   private String type;
   private String report;
   private String agentId;
-  private CollectionCaseCompact collectionCase = new CollectionCaseCompact();
-  private Contact contact = new Contact();
-  private AddressCompact address = new AddressCompact();
+  private CollectionCaseCompact collectionCase;
+  private Contact contact;
+  private AddressCompact address;
 }

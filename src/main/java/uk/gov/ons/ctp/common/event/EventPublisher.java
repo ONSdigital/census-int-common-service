@@ -8,9 +8,15 @@ import lombok.Getter;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.event.model.EventPayload;
+import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
+import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
+import uk.gov.ons.ctp.common.event.model.FulfilmentRequestedEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
 import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedEvent;
 import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedResponse;
+import uk.gov.ons.ctp.common.event.model.RespondentRefusalDetails;
+import uk.gov.ons.ctp.common.event.model.RespondentRefusalEvent;
+import uk.gov.ons.ctp.common.event.model.RespondentRefusalPayload;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchedEvent;
 import uk.gov.ons.ctp.common.event.model.SurveyLaunchedResponse;
 
@@ -24,7 +30,9 @@ public class EventPublisher {
   @Getter
   public enum EventType {
     SURVEY_LAUNCHED("RESPONDENT_HOME", "RH"),
-    RESPONDENT_AUTHENTICATED("RESPONDENT_HOME", "RH");
+    RESPONDENT_AUTHENTICATED("RESPONDENT_HOME", "RH"),
+    FULFILMENT_REQUESTED("CONTACT_CENTRE_API", "CC"),
+    REFUSAL_RECEIVED("CONTACT_CENTRE_API", "CC");
 
     private String source;
     private String channel;
@@ -61,13 +69,34 @@ public class EventPublisher {
       event.getPayload().setResponse((SurveyLaunchedResponse) payload);
       template.convertAndSend(routingKey, event);
       return event.getEvent().getTransactionId();
+
     } else if (payload instanceof RespondentAuthenticatedResponse) {
       Header header = buildHeader(EventType.RESPONDENT_AUTHENTICATED);
-      RespondentAuthenticatedEvent event = (new RespondentAuthenticatedEvent());
+      RespondentAuthenticatedEvent event = new RespondentAuthenticatedEvent();
       event.setEvent(header);
       event.getPayload().setResponse((RespondentAuthenticatedResponse) payload);
       template.convertAndSend(routingKey, event);
       return event.getEvent().getTransactionId();
+
+    } else if (payload instanceof FulfilmentRequest) {
+      Header header = buildHeader(EventType.FULFILMENT_REQUESTED);
+      FulfilmentRequestedEvent event = new FulfilmentRequestedEvent();
+      event.setEvent(header);
+      FulfilmentPayload fulfilmentPayload = new FulfilmentPayload((FulfilmentRequest) payload);
+      event.setPayload(fulfilmentPayload);
+      template.convertAndSend(routingKey, event);
+      return event.getEvent().getTransactionId();
+
+    } else if (payload instanceof RespondentRefusalDetails) {
+      Header header = buildHeader(EventType.REFUSAL_RECEIVED);
+      RespondentRefusalEvent event = new RespondentRefusalEvent();
+      event.setEvent(header);
+      RespondentRefusalPayload respondentRefusalPayload =
+          new RespondentRefusalPayload((RespondentRefusalDetails) payload);
+      event.setPayload(respondentRefusalPayload);
+      template.convertAndSend(routingKey, event);
+      return event.getEvent().getTransactionId();
+
     } else {
       log.error(payload.getClass().getName() + " not supported");
       throw new CTPException(
