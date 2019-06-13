@@ -11,6 +11,7 @@ import uk.gov.ons.ctp.common.event.model.EventPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentPayload;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequest;
 import uk.gov.ons.ctp.common.event.model.FulfilmentRequestedEvent;
+import uk.gov.ons.ctp.common.event.model.GenericEvent;
 import uk.gov.ons.ctp.common.event.model.Header;
 import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedEvent;
 import uk.gov.ons.ctp.common.event.model.RespondentAuthenticatedResponse;
@@ -62,46 +63,42 @@ public class EventPublisher {
    */
   public String sendEvent(String routingKey, EventPayload payload) throws CTPException {
 
+    GenericEvent genericEvent = null;
+    Header header = null;
     if (payload instanceof SurveyLaunchedResponse) {
-      Header header = buildHeader(EventType.SURVEY_LAUNCHED);
-      SurveyLaunchedEvent event = new SurveyLaunchedEvent();
-      event.setEvent(header);
-      event.getPayload().setResponse((SurveyLaunchedResponse) payload);
-      template.convertAndSend(routingKey, event);
-      return event.getEvent().getTransactionId();
-
+      header = buildHeader(EventType.SURVEY_LAUNCHED);
+      genericEvent = new SurveyLaunchedEvent();
+      genericEvent.setEvent(header);
+      ((SurveyLaunchedEvent) genericEvent)
+          .getPayload()
+          .setResponse((SurveyLaunchedResponse) payload);
     } else if (payload instanceof RespondentAuthenticatedResponse) {
-      Header header = buildHeader(EventType.RESPONDENT_AUTHENTICATED);
-      RespondentAuthenticatedEvent event = new RespondentAuthenticatedEvent();
-      event.setEvent(header);
-      event.getPayload().setResponse((RespondentAuthenticatedResponse) payload);
-      template.convertAndSend(routingKey, event);
-      return event.getEvent().getTransactionId();
-
+      header = buildHeader(EventType.RESPONDENT_AUTHENTICATED);
+      genericEvent = new RespondentAuthenticatedEvent();
+      genericEvent.setEvent(header);
+      ((RespondentAuthenticatedEvent) genericEvent)
+          .getPayload()
+          .setResponse((RespondentAuthenticatedResponse) payload);
     } else if (payload instanceof FulfilmentRequest) {
-      Header header = buildHeader(EventType.FULFILMENT_REQUESTED);
-      FulfilmentRequestedEvent event = new FulfilmentRequestedEvent();
-      event.setEvent(header);
+      header = buildHeader(EventType.FULFILMENT_REQUESTED);
+      genericEvent = new FulfilmentRequestedEvent();
+      genericEvent.setEvent(header);
       FulfilmentPayload fulfilmentPayload = new FulfilmentPayload((FulfilmentRequest) payload);
-      event.setPayload(fulfilmentPayload);
-      template.convertAndSend(routingKey, event);
-      return event.getEvent().getTransactionId();
-
+      ((FulfilmentRequestedEvent) genericEvent).setPayload(fulfilmentPayload);
     } else if (payload instanceof RespondentRefusalDetails) {
-      Header header = buildHeader(EventType.REFUSAL_RECEIVED);
-      RespondentRefusalEvent event = new RespondentRefusalEvent();
-      event.setEvent(header);
+      header = buildHeader(EventType.REFUSAL_RECEIVED);
+      genericEvent = new RespondentRefusalEvent();
+      genericEvent.setEvent(header);
       RespondentRefusalPayload respondentRefusalPayload =
           new RespondentRefusalPayload((RespondentRefusalDetails) payload);
-      event.setPayload(respondentRefusalPayload);
-      template.convertAndSend(routingKey, event);
-      return event.getEvent().getTransactionId();
-
+      ((RespondentRefusalEvent) genericEvent).setPayload(respondentRefusalPayload);
     } else {
       log.error(payload.getClass().getName() + " not supported");
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, payload.getClass().getName() + " not supported");
     }
+    template.convertAndSend(routingKey, genericEvent);
+    return header.getTransactionId();
   }
 
   private static Header buildHeader(EventType type) {
