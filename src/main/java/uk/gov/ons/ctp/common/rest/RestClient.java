@@ -361,7 +361,7 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws RestClientException {
-    log.debug("Enter getResources for path : {}", path);
+    log.debug("Enter executePutOrPost for path : {}", path);
 
     HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
