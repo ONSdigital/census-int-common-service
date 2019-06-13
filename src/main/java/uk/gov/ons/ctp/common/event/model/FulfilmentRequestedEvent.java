@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FulfilmentRequestedEvent extends GenericEvent {
 
-  private FulfilmentPayload payload = new FulfilmentPayload();
+  private FulfilmentPayload payload;
 }

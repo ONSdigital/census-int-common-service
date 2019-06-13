@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RespondentRefusalEvent extends GenericEvent {
 
-  private RespondentRefusalPayload payload = new RespondentRefusalPayload();
+  private RespondentRefusalPayload payload;
 }

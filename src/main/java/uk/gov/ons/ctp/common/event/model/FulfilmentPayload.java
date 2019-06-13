@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FulfilmentPayload {
 
-  private FulfilmentRequest fulfilmentRequest = new FulfilmentRequest();
+  private FulfilmentRequest fulfilmentRequest;
 }

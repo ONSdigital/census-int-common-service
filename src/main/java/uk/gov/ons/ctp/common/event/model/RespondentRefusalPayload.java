@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RespondentRefusalPayload {
 
-  private RespondentRefusalDetails refusal = new RespondentRefusalDetails();
+  private RespondentRefusalDetails refusal;
 }
