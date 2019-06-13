@@ -64,41 +64,41 @@ public class EventPublisher {
   public String sendEvent(String routingKey, EventPayload payload) throws CTPException {
 
     GenericEvent genericEvent = null;
-    Header header = null;
     if (payload instanceof SurveyLaunchedResponse) {
-      header = buildHeader(EventType.SURVEY_LAUNCHED);
-      genericEvent = new SurveyLaunchedEvent();
-      genericEvent.setEvent(header);
-      ((SurveyLaunchedEvent) genericEvent)
-          .getPayload()
-          .setResponse((SurveyLaunchedResponse) payload);
+      SurveyLaunchedEvent event = new SurveyLaunchedEvent();
+      event.setEvent(buildHeader(EventType.SURVEY_LAUNCHED));
+      event.getPayload().setResponse((SurveyLaunchedResponse) payload);
+      genericEvent = event;
+
     } else if (payload instanceof RespondentAuthenticatedResponse) {
-      header = buildHeader(EventType.RESPONDENT_AUTHENTICATED);
-      genericEvent = new RespondentAuthenticatedEvent();
-      genericEvent.setEvent(header);
-      ((RespondentAuthenticatedEvent) genericEvent)
-          .getPayload()
-          .setResponse((RespondentAuthenticatedResponse) payload);
+      RespondentAuthenticatedEvent event = new RespondentAuthenticatedEvent();
+      event.setEvent(buildHeader(EventType.RESPONDENT_AUTHENTICATED));
+      event.getPayload().setResponse((RespondentAuthenticatedResponse) payload);
+      genericEvent = event;
+
     } else if (payload instanceof FulfilmentRequest) {
-      header = buildHeader(EventType.FULFILMENT_REQUESTED);
-      genericEvent = new FulfilmentRequestedEvent();
-      genericEvent.setEvent(header);
+      FulfilmentRequestedEvent event = new FulfilmentRequestedEvent();
+      event.setEvent(buildHeader(EventType.FULFILMENT_REQUESTED));
       FulfilmentPayload fulfilmentPayload = new FulfilmentPayload((FulfilmentRequest) payload);
-      ((FulfilmentRequestedEvent) genericEvent).setPayload(fulfilmentPayload);
+      event.setPayload(fulfilmentPayload);
+      genericEvent = event;
+
     } else if (payload instanceof RespondentRefusalDetails) {
-      header = buildHeader(EventType.REFUSAL_RECEIVED);
-      genericEvent = new RespondentRefusalEvent();
-      genericEvent.setEvent(header);
+      RespondentRefusalEvent event = new RespondentRefusalEvent();
+      event.setEvent(buildHeader(EventType.REFUSAL_RECEIVED));
       RespondentRefusalPayload respondentRefusalPayload =
           new RespondentRefusalPayload((RespondentRefusalDetails) payload);
-      ((RespondentRefusalEvent) genericEvent).setPayload(respondentRefusalPayload);
+      event.setPayload(respondentRefusalPayload);
+      genericEvent = event;
+
     } else {
       log.error(payload.getClass().getName() + " not supported");
       throw new CTPException(
           CTPException.Fault.SYSTEM_ERROR, payload.getClass().getName() + " not supported");
     }
+
     template.convertAndSend(routingKey, genericEvent);
-    return header.getTransactionId();
+    return genericEvent.getEvent().getTransactionId();
   }
 
   private static Header buildHeader(EventType type) {
