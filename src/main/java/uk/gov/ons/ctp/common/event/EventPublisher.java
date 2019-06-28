@@ -59,7 +59,7 @@ public class EventPublisher {
    * @param routingKey message routing key for event
    * @param payload message payload for event
    * @return String UUID transaction Id for event
-   * @throws CTPException
+   * @throws CTPException if a failure was detected.
    */
   public String sendEvent(String routingKey, EventPayload payload) throws CTPException {
 
