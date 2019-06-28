@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -58,11 +59,26 @@ public class RestExceptionHandler {
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
       default:
-        status = HttpStatus.I_AM_A_TEAPOT;
+        status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
     }
 
     return new ResponseEntity<>(exception, status);
+  }
+
+  /**
+   * Handler for ResponseStatusException.
+   *
+   * @param exception is the underlying exception.
+   * @return ResponseEntity containing exception details.
+   */
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<?> handleResponseStatusException(ResponseStatusException exception) {
+    log.with("fault", exception.getStatus())
+        .with("exception_message", exception.getMessage())
+        .error("Uncaught ResponseStatusException", exception);
+
+    return new ResponseEntity<>(exception, exception.getStatus());
   }
 
   /**
