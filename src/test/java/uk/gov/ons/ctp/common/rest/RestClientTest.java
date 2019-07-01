@@ -15,7 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -225,7 +224,7 @@ public class RestClientTest {
   }
 
   /** A test */
-  @Test
+  @Test(expected = ResponseStatusException.class)
   public void testGetResourcesNoContent() {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
@@ -236,14 +235,11 @@ public class RestClientTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withStatus(HttpStatus.NO_CONTENT));
 
-    List<FakeDTO> fakeDTOs = restClient.getResources("/hotels", FakeDTO[].class);
-    assertTrue(fakeDTOs != null);
-    assertTrue(fakeDTOs.size() == 0);
-    mockServer.verify();
+    restClient.getResources("/hotels", FakeDTO[].class);
   }
 
   /** A test */
-  @Test(expected = RestClientException.class)
+  @Test(expected = ResponseStatusException.class)
   public void testGetResourcesReallyNotOk() {
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
@@ -260,7 +256,7 @@ public class RestClientTest {
   }
 
   /** A test */
-  @Test(expected = RestClientException.class)
+  @Test(expected = ResponseStatusException.class)
   public void testGetResourcesUnauthorized() {
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();

@@ -175,6 +175,16 @@ public class RestClient {
     // Convert the response string to a DTO object
     T responseObject = null;
     String responseBody = response.getBody();
+    if (responseBody == null) {
+      String errorMessage =
+          "Empty body returned for path '"
+              + uriComponents.toUriString()
+              + "'. Status code: "
+              + response.getStatusCode();
+      log.error(errorMessage);
+      throw new ResponseStatusException(
+          mapToExternalStatus(response.getStatusCode()), "Internal processing error");
+    }
     try {
       responseObject = objectMapper.readValue(responseBody, clazz);
     } catch (IOException e) {
@@ -232,22 +242,13 @@ public class RestClient {
 
     log.debug("Enter getResources for path : {}", path);
 
-    HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
-    UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
+    T[] responseArray = getResource(path, clazz, headerParams, queryParams, pathParams);
 
     List<T> responseList = new ArrayList<T>();
-    ResponseEntity<T[]> response =
-        restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, clazz);
+    if (responseArray.length > 0) {
+      responseList = Arrays.asList(responseArray);
+    }
 
-    if (!response.getStatusCode().is2xxSuccessful()) {
-      log.error("Failed to get when calling {}", uriComponents.toUri());
-      throw new RestClientException(
-          "Unexpected response status" + response.getStatusCode().value());
-    }
-    T[] responseArray = response.getBody();
-    if (responseArray != null && responseArray.length > 0) {
-      responseList = Arrays.asList(response.getBody());
-    }
     return responseList;
   }
 
