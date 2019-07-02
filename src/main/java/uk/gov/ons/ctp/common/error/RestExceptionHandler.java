@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /** Rest Exception Handler */
 @ControllerAdvice
@@ -40,8 +41,14 @@ public class RestExceptionHandler {
         .with("exception_message", exception.getMessage())
         .error("Uncaught CTPException", exception);
 
+    HttpStatus status = mapFaultToHttpStatus(exception.getFault());
+
+    return new ResponseEntity<>(exception, status);
+  }
+
+  private HttpStatus mapFaultToHttpStatus(Fault fault) {
     HttpStatus status;
-    switch (exception.getFault()) {
+    switch (fault) {
       case RESOURCE_NOT_FOUND:
         status = HttpStatus.NOT_FOUND;
         break;
@@ -62,8 +69,32 @@ public class RestExceptionHandler {
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
     }
+    return status;
+  }
 
-    return new ResponseEntity<>(exception, status);
+  private Fault mapHttpStatusToFault(HttpStatus status) {
+    Fault fault;
+    switch (status) {
+      case NOT_FOUND:
+        fault = Fault.RESOURCE_NOT_FOUND;
+        break;
+      case CONFLICT:
+        fault = Fault.RESOURCE_VERSION_CONFLICT;
+        break;
+      case UNAUTHORIZED:
+        fault = Fault.ACCESS_DENIED;
+        break;
+      case BAD_REQUEST:
+        fault = Fault.BAD_REQUEST;
+        break;
+      case INTERNAL_SERVER_ERROR:
+        fault = Fault.SYSTEM_ERROR;
+        break;
+      default:
+        fault = Fault.SYSTEM_ERROR;
+        break;
+    }
+    return fault;
   }
 
   /**
@@ -76,9 +107,11 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleResponseStatusException(ResponseStatusException exception) {
     log.with("fault", exception.getStatus())
         .with("exception_message", exception.getMessage())
-        .error("Uncaught ResponseStatusException", exception);
+        .warn("RestExceptionHandler is handling ResponseStatusException");
 
-    return new ResponseEntity<>(exception, exception.getStatus());
+    Fault fault = mapHttpStatusToFault(exception.getStatus());
+    CTPException ourException = new CTPException(fault, exception.getMessage());
+    return new ResponseEntity<>(ourException, exception.getStatus());
   }
 
   /**

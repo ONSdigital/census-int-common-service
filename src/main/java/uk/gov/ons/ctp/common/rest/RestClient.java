@@ -155,17 +155,21 @@ public class RestClient {
           restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class);
     } catch (HttpStatusCodeException e) {
       // Failure detected. For 4xx and 5xx status codes
-      log.error(
+      String errorMessage =
           "GET failed for path: '"
               + uriComponents
               + "' Status: "
               + e.getStatusCode()
               + " ResponseBody: '"
               + e.getResponseBodyAsString()
-              + "'",
-          e);
+              + "'";
+      if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+        log.warn(errorMessage, e);
+      } else {
+        log.error(errorMessage, e);
+      }
       throw new ResponseStatusException(
-          mapToExternalStatus(e.getStatusCode()), "Internal processing error");
+          mapToExternalStatus(e.getStatusCode()), "Unsuccessful response code");
     } catch (RestClientException e) {
       log.error("GET failed for path: '" + uriComponents + "'", e);
       throw new ResponseStatusException(
