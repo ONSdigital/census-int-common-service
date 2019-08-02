@@ -28,16 +28,16 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
  * of the environment variable named 'RABBITMQ_USERNAME'. It can also be replaced with the contents
  * of 'RabbitMQ.UserName'.
  */
-public class OverrideableYmlConfigReader {
-  private static final Logger log = LoggerFactory.getLogger(OverrideableYmlConfigReader.class);
+public class YmlConfigReader {
+  private static final Logger log = LoggerFactory.getLogger(YmlConfigReader.class);
 
-  Map<String, String> envVariables = null;
+  private Map<String, String> envVariables = null;
 
   private JsonNode updatedProperties;
 
-  public OverrideableYmlConfigReader(String resourcePath) throws CTPException {
+  public YmlConfigReader(String resourcePath) throws CTPException {
     // In preparation for substitution get hold of all environment variables
-    this.envVariables = getCleanedEnvironmentVariables();
+    this.envVariables = getNormalisedEnvironmentVariables();
 
     // Use Jackson to read in the content of the yml file
     JsonNode properties = readYmlFile(resourcePath);
@@ -48,13 +48,34 @@ public class OverrideableYmlConfigReader {
     this.updatedProperties = properties;
   }
 
-  private Map<String, String> getCleanedEnvironmentVariables() throws CTPException {
+  /**
+   * This method uses Jackson to convert the property data into a Java object.
+   *
+   * @param clazz is the class to convert the data into.
+   * @return Object containing the configuration date.
+   * @throws CTPException if the conversion failed.
+   */
+  public <T> T convertToObject(Class<T> clazz) throws CTPException {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+      return mapper.treeToValue(this.updatedProperties, clazz);
+
+    } catch (JsonProcessingException e) {
+      String errorMessage = "Failed to convert JsonNode properties to class";
+      log.error(errorMessage, e);
+      throw new CTPException(Fault.SYSTEM_ERROR);
+    }
+  }
+
+  private Map<String, String> getNormalisedEnvironmentVariables() throws CTPException {
     LinkedHashMap<String, String> cleanedEnvVariables = new LinkedHashMap<>();
 
     Map<String, String> envVariables = System.getenv();
     for (String name : envVariables.keySet()) {
       String value = envVariables.get(name);
-      String cleanedName = cleanEnvironmentVariableName(name);
+      String cleanedName = normaliseFieldName(name);
 
       if (cleanedEnvVariables.containsKey(cleanedName)) {
         String errorMessage = "Duplicate environment variable found for: '" + name + "'";
@@ -68,7 +89,7 @@ public class OverrideableYmlConfigReader {
     return cleanedEnvVariables;
   }
 
-  private String cleanEnvironmentVariableName(String name) {
+  private String normaliseFieldName(String name) {
     return name.replaceAll("(\\.|-|_)", "#").toLowerCase();
   }
 
@@ -101,17 +122,19 @@ public class OverrideableYmlConfigReader {
         traverseAndUpdateProperties(childNode, createPathToNode(pathToNode, key));
       } else {
         // Found a property
-        attemptNodeUpdate(node, pathToNode, key);
+        applyNodeEnvironmentalOverride(node, pathToNode, key);
       }
     }
     ;
   }
 
-  private void attemptNodeUpdate(JsonNode parentNode, String pathToParent, String nodeName)
-      throws CTPException {
+  // Updates the value of a child node with the contents of a matching environment variable.
+  // No update is applied if there is no matching environment variable.
+  private void applyNodeEnvironmentalOverride(
+      JsonNode parentNode, String pathToParent, String nodeName) throws CTPException {
     // Build full name of node, eg 'rabbit#host'
     String rawPathToNode = createPathToNode(pathToParent, nodeName);
-    String pathToNode = cleanEnvironmentVariableName(rawPathToNode);
+    String pathToNode = normaliseFieldName(rawPathToNode);
 
     if (envVariables.containsKey(pathToNode)) {
       ObjectNode objectNode = (ObjectNode) parentNode;
@@ -132,27 +155,6 @@ public class OverrideableYmlConfigReader {
       return childNodeName;
     } else {
       return parentNodePath + "_" + childNodeName;
-    }
-  }
-
-  /**
-   * This method uses Jackson to convert the property data into a Java object.
-   *
-   * @param clazz is the class to convert the data into.
-   * @return Object containing the configuration date.
-   * @throws CTPException if the conversion failed.
-   */
-  public <T> T convertToObject(Class<T> clazz) throws CTPException {
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
-      return mapper.treeToValue(this.updatedProperties, clazz);
-
-    } catch (JsonProcessingException e) {
-      String errorMessage = "Failed to convert JsonNode properties to class";
-      log.error(errorMessage, e);
-      throw new CTPException(Fault.SYSTEM_ERROR);
     }
   }
 }
