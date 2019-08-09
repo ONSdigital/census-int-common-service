@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -96,15 +96,17 @@ public class YmlConfigReader {
   // Get Jackson to read YML file
   private JsonNode readYmlFile(String resourcePath) throws CTPException {
     JsonNode config;
-    try {
+
+    try (InputStream rabbitConfigStream =
+        getClass().getClassLoader().getResource(resourcePath).openStream()) {
       ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-      File resourceFile = new File(getClass().getClassLoader().getResource(resourcePath).getFile());
-      config = mapper.readTree(resourceFile);
+      config = mapper.readTree(rabbitConfigStream);
     } catch (IOException e) {
       String errorMessage = "Failed to read contents of configuration file: " + resourcePath;
       log.error(errorMessage);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
+
     return config;
   }
 
