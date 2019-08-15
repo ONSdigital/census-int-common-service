@@ -35,6 +35,13 @@ public class YmlConfigReader {
 
   private JsonNode updatedProperties;
 
+  /**
+   * Constructor which reads the YML file and updates fields with any overrides that are currently
+   * set in environment variables.
+   *
+   * @param resourcePath is the name of the YML that must be on the class path.
+   * @throws CTPException if anything goes wrong.
+   */
   public YmlConfigReader(String resourcePath) throws CTPException {
     // In preparation for substitution get hold of all environment variables
     this.envVariables = getNormalisedEnvironmentVariables();
@@ -49,7 +56,7 @@ public class YmlConfigReader {
   }
 
   /**
-   * This method uses Jackson to convert the property data into a Java object.
+   * This method uses Jackson to convert the current state of the property data into a Java object.
    *
    * @param clazz is the class to convert the data into.
    * @return Object containing the configuration date.
@@ -65,7 +72,7 @@ public class YmlConfigReader {
     } catch (JsonProcessingException e) {
       String errorMessage = "Failed to convert JsonNode properties to class";
       log.error(errorMessage, e);
-      throw new CTPException(Fault.SYSTEM_ERROR);
+      throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
   }
 
@@ -95,6 +102,8 @@ public class YmlConfigReader {
 
   // Get Jackson to read YML file
   private JsonNode readYmlFile(String resourcePath) throws CTPException {
+    log.debug("Reading yml file from '" + resourcePath + "'");
+
     JsonNode config;
 
     try (InputStream rabbitConfigStream =
@@ -148,6 +157,15 @@ public class YmlConfigReader {
 
       // Update value of node
       String replacementValue = envVariables.get(pathToNode);
+      JsonNode currentValue = objectNode.get(nodeName);
+      log.debug(
+          "Updating value of node '"
+              + pathToNode
+              + "' from '"
+              + currentValue.asText()
+              + "' to '"
+              + replacementValue
+              + "'");
       objectNode.put(nodeName, replacementValue);
     }
   }
