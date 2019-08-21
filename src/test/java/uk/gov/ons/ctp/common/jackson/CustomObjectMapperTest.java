@@ -51,6 +51,24 @@ public class CustomObjectMapperTest {
   }
 
   @Test
+  public void testSerialisationWithoutMilliseconds() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    Date testDate = objectMapper.convertValue("2018-07-27T12:49:35Z", Date.class);
+
+    assertThat(objectMapper.writeValueAsString(testDate), is("\"2018-07-27T12:49:35.000Z\""));
+  }
+
+  @Test
+  public void testSerialisationWithoutSeconds() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    Date testDate = objectMapper.convertValue("2018-07-27T12:49Z", Date.class);
+
+    assertThat(objectMapper.writeValueAsString(testDate), is("\"2018-07-27T12:49:00.000Z\""));
+  }
+
+  @Test
   public void testMapperIsConfiguredToWriteIsoDatesFromDate() throws JsonProcessingException {
     final CustomObjectMapper objectMapper = new CustomObjectMapper();
 
