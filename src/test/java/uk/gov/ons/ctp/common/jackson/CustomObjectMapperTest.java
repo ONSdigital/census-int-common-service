@@ -22,7 +22,7 @@ public class CustomObjectMapperTest {
   private static final ZoneOffset ZONE_BST = ZoneOffset.ofHours(1);
   private static final OffsetDateTime FRI_27_JULY_OFFSET_DATE_TIME =
       OffsetDateTime.ofInstant(EPOCH_INSTANT, ZONE_BST);
-  private static final String FRI_27_JULY_JSON_ISO_WITH_MS = "\"2018-07-27T13:49:35.000+01:00\"";
+  private static final String FRI_27_JULY_JSON_ISO_WITH_MS = "\"2018-07-27T12:49:35.000Z\"";
   private static final String FRI_27_JULY_JSON_ISO = "\"2018-07-27T13:49:35+01:00\"";
 
   static class SerializableObject {
