@@ -3,14 +3,15 @@ package uk.gov.ons.ctp.common.jackson;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import org.junit.Test;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Data;
 
 /** Test for common custom object mapper */
 public class CustomObjectMapperTest {
@@ -28,6 +29,27 @@ public class CustomObjectMapperTest {
     boolean ok = true;
   }
 
+  @Data
+  private static class ExampleClass {
+    String name;
+    
+    @JsonSerialize(using = CustomDateSerialiser.class)
+    Date sampleDate;
+  }
+  
+  
+  @Test
+  public void testSerialisationOfClassWithDate() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    ExampleClass testObject = new ExampleClass();
+    testObject.name = "Fred";
+    testObject.sampleDate = FRI_27_JULY_DATE;
+    
+    String expected = "{\"name\":\"Fred\",\"sampleDate\":" + FRI_27_JULY_JSON_ISO_WITH_MS + "}";
+    assertThat(objectMapper.writeValueAsString(testObject), is(expected));
+  }
+  
   @Test
   public void testMapperIsConfiguredToWriteIsoDatesFromDate() throws JsonProcessingException {
     final CustomObjectMapper objectMapper = new CustomObjectMapper();
