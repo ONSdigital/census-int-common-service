@@ -37,11 +37,23 @@ public class RestExceptionHandler {
    */
   @ExceptionHandler(CTPException.class)
   public ResponseEntity<?> handleCTPException(CTPException exception) {
-    log.with("fault", exception.getFault())
-        .with("exception_message", exception.getMessage())
-        .error("Uncaught CTPException", exception);
 
     HttpStatus status = mapFaultToHttpStatus(exception.getFault());
+
+    switch (status) {
+      case NOT_FOUND:
+      case BAD_REQUEST:
+        log.with("fault", exception.getFault())
+            .with("message", exception.getMessage())
+            .warn("Handling CTPException", exception);
+        break;
+
+      default:
+        log.with("fault", exception.getFault())
+            .with("message", exception.getMessage())
+            .error("Handling CTPException", exception);
+        break;
+    }
 
     return new ResponseEntity<>(exception, status);
   }
