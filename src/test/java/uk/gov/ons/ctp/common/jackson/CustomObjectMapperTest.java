@@ -5,11 +5,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import lombok.Data;
 import org.junit.Test;
 
 /** Test for common custom object mapper */
@@ -21,11 +23,49 @@ public class CustomObjectMapperTest {
   private static final ZoneOffset ZONE_BST = ZoneOffset.ofHours(1);
   private static final OffsetDateTime FRI_27_JULY_OFFSET_DATE_TIME =
       OffsetDateTime.ofInstant(EPOCH_INSTANT, ZONE_BST);
-  private static final String FRI_27_JULY_JSON_ISO_WITH_MS = "\"2018-07-27T13:49:35.000+01:00\"";
+  private static final String FRI_27_JULY_JSON_ISO_WITH_MS = "\"2018-07-27T12:49:35.000Z\"";
   private static final String FRI_27_JULY_JSON_ISO = "\"2018-07-27T13:49:35+01:00\"";
 
   static class SerializableObject {
     boolean ok = true;
+  }
+
+  @Data
+  private static class ExampleClass {
+    String name;
+
+    @JsonSerialize(using = CustomDateSerialiser.class)
+    Date sampleDate;
+  }
+
+  @Test
+  public void testSerialisationOfClassWithDate() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    ExampleClass testObject = new ExampleClass();
+    testObject.name = "Fred";
+    testObject.sampleDate = FRI_27_JULY_DATE;
+
+    String expected = "{\"name\":\"Fred\",\"sampleDate\":" + FRI_27_JULY_JSON_ISO_WITH_MS + "}";
+    assertThat(objectMapper.writeValueAsString(testObject), is(expected));
+  }
+
+  @Test
+  public void testSerialisationWithoutMilliseconds() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    Date testDate = objectMapper.convertValue("2018-07-27T12:49:35Z", Date.class);
+
+    assertThat(objectMapper.writeValueAsString(testDate), is("\"2018-07-27T12:49:35.000Z\""));
+  }
+
+  @Test
+  public void testSerialisationWithoutSeconds() throws JsonProcessingException {
+    final CustomObjectMapper objectMapper = new CustomObjectMapper();
+
+    Date testDate = objectMapper.convertValue("2018-07-27T12:49Z", Date.class);
+
+    assertThat(objectMapper.writeValueAsString(testDate), is("\"2018-07-27T12:49:00.000Z\""));
   }
 
   @Test
