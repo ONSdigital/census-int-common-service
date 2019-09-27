@@ -199,7 +199,7 @@ public class RestExceptionHandler {
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getMessage())
-        .error("Unhandled BindException", ex);
+        .warn("Unhandled BindException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, ex.getMessage());
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
