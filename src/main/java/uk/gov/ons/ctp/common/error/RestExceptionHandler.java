@@ -273,7 +273,8 @@ public class RestExceptionHandler {
   }
 
   /**
-   * Handles Method Argument not valid Exception
+   * Handles Method Argument not valid Exception, which is generated for validation on the fields in
+   * the request body.
    *
    * @param ex exception
    * @return ResponseEntity containing exception and BAD_REQUEST http status
@@ -283,7 +284,7 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
     log.with("parameter", ex.getParameter().getParameterName())
-        .error("Uncaught MethodArgumentNotValidException", ex);
+        .warn("Uncaught MethodArgumentNotValidException", ex);
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
