@@ -9,7 +9,8 @@ public class UniquePropertyReferenceNumberEditor extends PropertyEditorSupport {
   public void setAsText(String text) throws IllegalArgumentException {
     try {
       Long uprn = Long.parseLong(text);
-      if (uprn.longValue() >= UniquePropertyReferenceNumber.UPRN_MIN && uprn.longValue() <= UniquePropertyReferenceNumber.UPRN_MAX) {
+      if (uprn.longValue() >= UniquePropertyReferenceNumber.UPRN_MIN
+          && uprn.longValue() <= UniquePropertyReferenceNumber.UPRN_MAX) {
         setValue(new UniquePropertyReferenceNumber(uprn));
       } else {
         throw new IllegalArgumentException();
