@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UniquePropertyReferenceNumber {
   public static final String UPRN_RE = "^\\d{1,12}$";
   public static final long UPRN_MIN = 0L;
