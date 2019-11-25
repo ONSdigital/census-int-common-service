@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.model.editor;
+package uk.gov.ons.ctp.common.model;
 
 import static org.junit.Assert.assertEquals;
 
