@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.junit.Test;
-import uk.gov.ons.ctp.common.model.UniquePropertyReferenceNumber;
 
 public class UPRNDeserializationTest {
 
