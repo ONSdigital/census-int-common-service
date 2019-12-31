@@ -22,9 +22,7 @@ import org.springframework.util.ClassUtils;
  */
 public class CTPRetryPolicy implements RetryPolicy {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -4678565949872055319L;
 
   private static final Logger log = LoggerFactory.getLogger(CTPRetryPolicy.class);
@@ -133,9 +131,7 @@ public class CTPRetryPolicy implements RetryPolicy {
 
   /** To mirror implementation in SimpleRetryPolicy */
   private static class CTPRetryContext extends RetryContextSupport {
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = -8133635092645664091L;
 
     /**

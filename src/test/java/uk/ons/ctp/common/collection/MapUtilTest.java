@@ -2,16 +2,17 @@ package uk.ons.ctp.common.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
 import lombok.Data;
+import org.junit.Test;
 import uk.gov.ons.ctp.common.collection.MapUtil;
 
 public class MapUtilTest {
 
   public Map<String, String> testMap = new HashMap<>();
-  
+
   @Test
   public void putIfNotNullWhenNotNull() {
     MapUtil.putIfNotNull(testMap, "notNull", () -> "notNullValue");
@@ -30,7 +31,7 @@ public class MapUtilTest {
     MapUtil.putIfNotNull(testMap, "inDirectlyNull", () -> foo.getName());
     assertFalse(testMap.containsKey("inDirectlyNull"));
   }
-  
+
   @Test
   public void putIfNotNullWhenNullPointer() {
     Foo foo = new Foo();

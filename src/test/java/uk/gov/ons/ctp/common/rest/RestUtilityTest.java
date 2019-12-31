@@ -23,7 +23,8 @@ public class RestUtilityTest {
     String authorizationHeader = httpEntity.getHeaders().getFirst("Authorization");
     String base64UserPassword = StringUtils.substringAfter(authorizationHeader, "Basic ");
     String usernamePassword =
-        new String(Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
+        new String(
+            Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
     assertEquals(usernamePassword, "user:password");
   }
 
@@ -51,7 +52,8 @@ public class RestUtilityTest {
     String authorizationHeader = httpEntity.getHeaders().getFirst("Authorization");
     String base64UserPassword = StringUtils.substringAfter(authorizationHeader, "Basic ");
     String usernamePassword =
-        new String(Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
+        new String(
+            Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
     assertEquals(usernamePassword, "user:password");
   }
 
