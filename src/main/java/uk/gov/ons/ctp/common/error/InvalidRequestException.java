@@ -7,6 +7,10 @@ import org.springframework.validation.Errors;
 // @CoverageIgnore
 public class InvalidRequestException extends Exception {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3708136528897081539L;
   private Errors errors;
   private String sourceMessage = "Invalid Request ";
 

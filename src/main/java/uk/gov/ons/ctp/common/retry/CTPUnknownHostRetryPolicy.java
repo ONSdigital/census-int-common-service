@@ -22,6 +22,11 @@ import org.springframework.util.ClassUtils;
  */
 public class CTPUnknownHostRetryPolicy implements RetryPolicy {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7771272230936795889L;
+
   private static final Logger log = LoggerFactory.getLogger(CTPUnknownHostRetryPolicy.class);
 
   private static final int DEFAULT_MAX_ATTEMPTS = 3;
@@ -163,6 +168,11 @@ public class CTPUnknownHostRetryPolicy implements RetryPolicy {
 
   /** To mirror implementation in SimpleRetryPolicy */
   private static class CTPRetryContext extends RetryContextSupport {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7264213745244015857L;
+
     /**
      * Method to mirror implementation in SimpleRetryPolicy
      *
