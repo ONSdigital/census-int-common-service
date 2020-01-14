@@ -14,21 +14,21 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <id>central</id>
-                    <name>libs-release</name>
-                    <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-release-local</url>
-                </repository>
-                <repository>
-                    <id>snapshots</id>
-                    <url>http://artifactory-sdc.onsdigital.uk/artifactory/libs-snapshot-local/</url>
+                    <id>external-repos</id>
+                    <name>External Virtual Repository</name>
+                    <url>https://ons.jfrog.io/ons/external-repos</url>
                 </repository>
                 <repository>
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <id>maven-central</id>
-                    <name>Central Repository</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
+                    <id>releases</id>
+                    <name>libs-release</name>
+                    <url>https://ons.jfrog.io/ons/libs-releases-local</url>
+                </repository>
+                <repository>
+                    <id>snapshots</id>
+                    <url>https://ons.jfrog.io/ons/libs-snapshots-local/</url>
                 </repository>
             </repositories>
         </profile>
@@ -40,14 +40,19 @@
 
     <servers>
         <server>
-            <username>build</username>
-            <password>${env.ARTIFACTORY_PASSWORD}</password>
-            <id>central</id>
+            <username>integration-ci</username>
+            <password>${env.JFROG_TOKEN}</password>
+            <id>releases</id>
         </server>
         <server>
-            <username>build</username>
-            <password>${env.ARTIFACTORY_PASSWORD}</password>
+            <username>integration-ci</username>
+            <password>${env.JFROG_TOKEN}</password>
             <id>snapshots</id>
+        </server>
+        <server>
+            <username>integration-ci</username>
+            <password>${env.JFROG_TOKEN}</password>
+            <id>external-repos</id>
         </server>
     </servers>
 </settings>
