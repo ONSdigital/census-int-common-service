@@ -14,7 +14,7 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <id>external-repos</id>
+                    <id>central</id>
                     <name>External Virtual Repository</name>
                     <url>https://ons.jfrog.io/ons/external-repos</url>
                 </repository>
@@ -31,6 +31,13 @@
                     <url>https://ons.jfrog.io/ons/libs-snapshots-local/</url>
                 </repository>
             </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <name>External Virtual Repository</name>
+                    <url>https://ons.jfrog.io/ons/external-repos</url>
+                </pluginRepository>
+            </pluginRepositories>
         </profile>
     </profiles>
 
@@ -52,7 +59,7 @@
         <server>
             <username>integration-ci</username>
             <password>${env.JFROG_TOKEN}</password>
-            <id>external-repos</id>
+            <id>central</id>
         </server>
     </servers>
 </settings>
