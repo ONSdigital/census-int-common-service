@@ -1,19 +1,12 @@
 package uk.gov.ons.ctp.common.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * If this class is included Jackson serialisation then you may want to simplify the generated
- * string by removing an extra layer of output, so that the generated string can contain a 'uprn'
- * value instead of showing the hierarchy of ownership. To do this annotate references to this class
- * with '@JsonUnwrapped'.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +14,11 @@ public class UniquePropertyReferenceNumber {
   public static final String UPRN_RE = "^\\d{1,12}$";
   public static final long UPRN_MIN = 0L;
   public static final long UPRN_MAX = 999999999999L;
+
+  @JsonCreator
+  public static UniquePropertyReferenceNumber create(String uprn) {
+    return new UniquePropertyReferenceNumber(uprn);
+  }
 
   public UniquePropertyReferenceNumber(String str) {
     if (!StringUtils.isBlank(str)) {
@@ -37,7 +35,5 @@ public class UniquePropertyReferenceNumber {
     }
   }
 
-  @JsonProperty("uprn")
-  @JsonSerialize(using = ToStringSerializer.class)
-  private long value;
+  @JsonValue private long value;
 }
