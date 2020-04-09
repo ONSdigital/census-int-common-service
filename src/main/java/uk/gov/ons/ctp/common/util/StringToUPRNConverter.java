@@ -20,6 +20,7 @@ public class StringToUPRNConverter
    * @param mappingContext currently unused
    * @return UniquePropertyReferenceNumber representation of String
    */
+  @Override
   public UniquePropertyReferenceNumber convertTo(
       String source,
       Type<UniquePropertyReferenceNumber> destinationType,
@@ -35,6 +36,7 @@ public class StringToUPRNConverter
    * @param mappingContext currently unused
    * @return String representation of UniquePropertyReferenceNumber value
    */
+  @Override
   public String convertFrom(
       UniquePropertyReferenceNumber source,
       Type<String> destinationType,
