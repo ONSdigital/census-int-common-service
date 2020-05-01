@@ -43,6 +43,7 @@ public class RestExceptionHandler {
     switch (status) {
       case NOT_FOUND:
       case BAD_REQUEST:
+      case ACCEPTED:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
             .warn("Handling CTPException", exception);
@@ -77,6 +78,9 @@ public class RestExceptionHandler {
       case SYSTEM_ERROR:
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
+      case ACCEPTED_UNABLE_TO_PROCESS:
+        status = HttpStatus.ACCEPTED;
+        break;
       default:
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
@@ -101,6 +105,9 @@ public class RestExceptionHandler {
         break;
       case INTERNAL_SERVER_ERROR:
         fault = Fault.SYSTEM_ERROR;
+        break;
+      case ACCEPTED:
+        fault = Fault.ACCEPTED_UNABLE_TO_PROCESS;
         break;
       default:
         fault = Fault.SYSTEM_ERROR;
