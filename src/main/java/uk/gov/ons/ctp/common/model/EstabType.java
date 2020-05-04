@@ -55,11 +55,11 @@ public enum EstabType {
   public String getCode() {
     return code;
   }
-  
+
   public AddressType getAddressType() {
     return addressType;
   }
-  
+
   public static Optional<EstabType> forCode(String code) {
     for (EstabType estabType : EstabType.values()) {
       if (estabType.code.equals(code.toUpperCase())) {
@@ -69,4 +69,3 @@ public enum EstabType {
     return Optional.empty();
   }
 }
-
