@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.model;
 
+import java.util.Optional;
+
 public enum EstabType {
   HALL_OF_RESIDENCE("HALL OF RESIDENCE", AddressType.CE),
   CARE_HOME("CARE HOME", AddressType.CE),
@@ -56,6 +58,15 @@ public enum EstabType {
   
   public AddressType getAddressType() {
     return addressType;
+  }
+  
+  public static Optional<EstabType> forCode(String code) {
+    for (EstabType estabType : EstabType.values()) {
+      if (estabType.code.equals(code.toUpperCase())) {
+        return Optional.of(estabType);
+      }
+    }
+    return Optional.empty();
   }
 }
 
