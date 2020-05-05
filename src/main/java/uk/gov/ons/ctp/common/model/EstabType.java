@@ -3,6 +3,7 @@ package uk.gov.ons.ctp.common.model;
 import java.util.Optional;
 
 public enum EstabType {
+  OTHER("", AddressType.HH), // not sure about the address type for this one - depends how OTHER gets used if at all
   HALL_OF_RESIDENCE("HALL OF RESIDENCE", AddressType.CE),
   CARE_HOME("CARE HOME", AddressType.CE),
   HOSPITAL("HOSPITAL", AddressType.CE),
