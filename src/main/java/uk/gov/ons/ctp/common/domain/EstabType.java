@@ -1,9 +1,11 @@
-package uk.gov.ons.ctp.common.model;
+package uk.gov.ons.ctp.common.domain;
 
 import java.util.Optional;
 
 public enum EstabType {
-  OTHER("", AddressType.HH), // not sure about the address type for this one - depends how OTHER gets used if at all
+  // code for OTHER deliberate - if AIMS code is actually "" or "Floating Caravan Palace"
+  // either way forCode() will return OTHER
+  OTHER("", null),
   HALL_OF_RESIDENCE("HALL OF RESIDENCE", AddressType.CE),
   CARE_HOME("CARE HOME", AddressType.CE),
   HOSPITAL("HOSPITAL", AddressType.CE),
@@ -57,16 +59,16 @@ public enum EstabType {
     return code;
   }
 
-  public AddressType getAddressType() {
-    return addressType;
+  public Optional<AddressType> getAddressType() {
+    return addressType == null ? Optional.empty() : Optional.of(addressType);
   }
 
-  public static Optional<EstabType> forCode(String code) {
+  public static EstabType forCode(String code) {
     for (EstabType estabType : EstabType.values()) {
       if (estabType.code.equals(code.toUpperCase())) {
-        return Optional.of(estabType);
+        return estabType;
       }
     }
-    return Optional.empty();
+    return EstabType.OTHER;
   }
 }

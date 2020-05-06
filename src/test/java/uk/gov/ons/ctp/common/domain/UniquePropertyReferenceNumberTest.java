@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.model;
+package uk.gov.ons.ctp.common.domain;
 
 import static org.junit.Assert.assertEquals;
 

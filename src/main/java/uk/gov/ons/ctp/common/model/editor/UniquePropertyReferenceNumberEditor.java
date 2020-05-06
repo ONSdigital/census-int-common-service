@@ -1,7 +1,7 @@
 package uk.gov.ons.ctp.common.model.editor;
 
 import java.beans.PropertyEditorSupport;
-import uk.gov.ons.ctp.common.model.UniquePropertyReferenceNumber;
+import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 
 public class UniquePropertyReferenceNumberEditor extends PropertyEditorSupport {
 

@@ -3,7 +3,7 @@ package uk.gov.ons.ctp.common.util;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import uk.gov.ons.ctp.common.model.UniquePropertyReferenceNumber;
+import uk.gov.ons.ctp.common.domain.UniquePropertyReferenceNumber;
 
 /**
  * Orika Bi-directional custom converter to convert String to UniquePropertyReferenceNumber and vice

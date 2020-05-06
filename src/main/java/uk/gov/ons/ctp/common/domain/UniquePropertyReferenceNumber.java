@@ -1,4 +1,4 @@
-package uk.gov.ons.ctp.common.model;
+package uk.gov.ons.ctp.common.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
