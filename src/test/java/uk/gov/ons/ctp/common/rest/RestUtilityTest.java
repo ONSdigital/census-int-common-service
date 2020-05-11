@@ -1,14 +1,14 @@
 package uk.gov.ons.ctp.common.rest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
-import org.springframework.security.crypto.codec.Base64;
 
 public class RestUtilityTest {
 
@@ -23,7 +23,8 @@ public class RestUtilityTest {
     String authorizationHeader = httpEntity.getHeaders().getFirst("Authorization");
     String base64UserPassword = StringUtils.substringAfter(authorizationHeader, "Basic ");
     String usernamePassword =
-        new String(Base64.decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
+        new String(
+            Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
     assertEquals(usernamePassword, "user:password");
   }
 
@@ -51,7 +52,8 @@ public class RestUtilityTest {
     String authorizationHeader = httpEntity.getHeaders().getFirst("Authorization");
     String base64UserPassword = StringUtils.substringAfter(authorizationHeader, "Basic ");
     String usernamePassword =
-        new String(Base64.decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
+        new String(
+            Base64.getDecoder().decode(base64UserPassword.getBytes()), StandardCharsets.US_ASCII);
     assertEquals(usernamePassword, "user:password");
   }
 

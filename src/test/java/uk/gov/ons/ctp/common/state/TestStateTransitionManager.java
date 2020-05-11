@@ -1,10 +1,10 @@
 package uk.gov.ons.ctp.common.state;
 
 import static junit.framework.TestCase.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static uk.gov.ons.ctp.common.state.BasicStateTransitionManager.TRANSITION_ERROR_MSG;
 
 import java.util.HashMap;

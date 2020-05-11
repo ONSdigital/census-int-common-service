@@ -6,9 +6,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /** Test of the Controller Advice for Spring MVC exception handling */
+@RunWith(MockitoJUnitRunner.class)
 public class RestExceptionHandlerTest {
 
   @RestController
@@ -37,7 +39,6 @@ public class RestExceptionHandlerTest {
 
   @Before
   public void setup() {
-    MockitoAnnotations.initMocks(this);
     mockMvc =
         MockMvcBuilders.standaloneSetup(testController)
             .setControllerAdvice(new RestExceptionHandler())
