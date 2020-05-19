@@ -1,16 +1,14 @@
 package uk.gov.ons.ctp.common.distributed;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
@@ -26,16 +24,6 @@ import org.redisson.api.RedissonClient;
 public class DistributedLockManagerRedissonImplTest {
 
   @Mock private RedissonClient redissonClient;
-
-  /**
-   * Before the test
-   *
-   * @throws Exception oops
-   */
-  @Before
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-  }
 
   /**
    * Test
