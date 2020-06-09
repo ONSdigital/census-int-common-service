@@ -1,6 +1,8 @@
 package uk.gov.ons.ctp.common.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -22,6 +24,18 @@ public class EstabTypeTest {
 
     EstabType saUpperEstabType = EstabType.forCode("SHELTERED ACCOMMODATION");
     assertEquals(EstabType.SHELTERED_ACCOMMODATION, saUpperEstabType);
+  }
+
+  @Test
+  public void estabIsNotSecure() {
+    EstabType careHome = EstabType.forCode("Care home");
+    assertFalse(careHome.isSecure());
+  }
+
+  @Test
+  public void estabIsSecure() {
+    EstabType mentalHealthEstab = EstabType.forCode("HIGH SECURE MENTAL HEALTH");
+    assertTrue(mentalHealthEstab.isSecure());
   }
 
   @Test
