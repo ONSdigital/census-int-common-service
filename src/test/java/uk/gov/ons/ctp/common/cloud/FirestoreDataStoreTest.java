@@ -20,8 +20,10 @@ import com.google.cloud.firestore.WriteResult;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import lombok.AllArgsConstructor;
@@ -298,6 +300,27 @@ public class FirestoreDataStoreTest {
     firestoreDataStore.deleteObject(TEST_SCHEMA, nonExistantUUID.toString());
     verify(apiFuture).get();
   }
+
+  @Test
+  public void testGetCollectionNames() {
+    // Build names of collections that mock Firestore will list
+    CollectionReference collectionA = Mockito.mock(CollectionReference.class);
+    when(collectionA.getId()).thenReturn("collectionA");
+    CollectionReference collectionB = Mockito.mock(CollectionReference.class);
+    when(collectionB.getId()).thenReturn("collectionB");
+
+    // Create results from listCollections
+    Iterable<CollectionReference> collections = Arrays.asList(collectionA, collectionB);
+    when(firestore.listCollections()).thenReturn(collections);
+
+    Set<String> collectionNames = firestoreDataStore.getCollectionNames();
+
+    assertTrue(collectionNames.toString(), collectionNames.contains("collectionA"));
+    assertTrue(collectionNames.toString(), collectionNames.contains("collectionB"));
+    assertEquals(2, collectionNames.size());
+  }
+
+  // --- helpers ...
 
   private ApiFuture<WriteResult> mockFirestoreForExpectedStore(
       String expectedSchema, String expectedKey, Object expectedValue, Exception exception)

@@ -13,8 +13,10 @@ import com.google.cloud.firestore.WriteResult;
 import io.grpc.Status;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -261,5 +263,17 @@ public class FirestoreDataStore implements CloudDataStore {
           "Failed to delete object from Firestore. Schema: " + schema + " with key " + key;
       throw new CTPException(Fault.SYSTEM_ERROR, e, failureMessage);
     }
+  }
+
+  /**
+   * Returns the names of top level Firestore collections.
+   *
+   * @return a Set with the names of the current Firestore collections.
+   */
+  @Override
+  public Set<String> getCollectionNames() {
+    Set<String> collectionNames = new HashSet<>();
+    firestore.listCollections().forEach(c -> collectionNames.add(c.getId()));
+    return collectionNames;
   }
 }

@@ -2,6 +2,7 @@ package uk.gov.ons.ctp.common.cloud;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 public interface CloudDataStore {
@@ -19,4 +20,6 @@ public interface CloudDataStore {
       throws CTPException;
 
   void deleteObject(final String schema, final String key) throws CTPException;
+
+  Set<String> getCollectionNames();
 }
