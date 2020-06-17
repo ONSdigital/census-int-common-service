@@ -4,6 +4,7 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -68,6 +69,10 @@ public class RetryableCloudDataStore {
       Class<T> target, final String schema, String[] fieldPath, String searchValue)
       throws CTPException {
     return cloudDataStore.search(target, schema, fieldPath, searchValue);
+  }
+
+  public Set<String> getCollectionNames() {
+    return cloudDataStore.getCollectionNames();
   }
 
   /**
