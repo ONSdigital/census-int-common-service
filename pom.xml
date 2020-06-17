@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.integration.common</groupId>
   <artifactId>framework</artifactId>
-  <version>ROBC-CR-998-X-SNAPSHOT</version>
+  <version>0.0.60-SNAPSHOT-CR-998</version>
   <packaging>jar</packaging>
 
   <name>CTP : Integration Common Framework</name>
