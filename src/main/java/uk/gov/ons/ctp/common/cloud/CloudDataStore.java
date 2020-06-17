@@ -15,8 +15,7 @@ public interface CloudDataStore {
   <T> Optional<T> retrieveObject(Class<T> target, final String schema, final String key)
       throws CTPException;
 
-  public <T> List<T> search(
-      Class<T> target, final String schema, String[] fieldPath, String searchValue)
+  <T> List<T> search(Class<T> target, final String schema, String[] fieldPath, String searchValue)
       throws CTPException;
 
   void deleteObject(final String schema, final String key) throws CTPException;
