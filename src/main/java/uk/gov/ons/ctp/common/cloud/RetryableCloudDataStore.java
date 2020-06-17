@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -21,9 +20,6 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 @Service
 public class RetryableCloudDataStore {
   private static final Logger log = LoggerFactory.getLogger(RetryableCloudDataStore.class);
-
-  @Value("${GOOGLE_CLOUD_PROJECT}")
-  String gcpProject;
 
   private CloudDataStore cloudDataStore;
 

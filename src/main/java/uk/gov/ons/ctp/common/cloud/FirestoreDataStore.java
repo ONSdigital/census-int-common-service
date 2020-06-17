@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
@@ -26,15 +27,13 @@ import uk.gov.ons.ctp.common.error.CTPException.Fault;
 public class FirestoreDataStore implements CloudDataStore {
   private static final Logger log = LoggerFactory.getLogger(FirestoreDataStore.class);
 
-  // Names of environment variables which firestore uses for connection information
-  public static final String FIRESTORE_PROJECT_ENV_NAME = "GOOGLE_CLOUD_PROJECT";
+  @Value("${GOOGLE_CLOUD_PROJECT}")
+  private String gcpProject;
 
   private Firestore firestore;
 
   public void connect() {
-    String googleProjectName = System.getenv(FirestoreDataStore.FIRESTORE_PROJECT_ENV_NAME);
-    log.with(googleProjectName).debug("Connecting to Firestore project");
-
+    log.info("Connecting to Firestore project {}", gcpProject);
     firestore = FirestoreOptions.getDefaultInstance().getService();
   }
 
