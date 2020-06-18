@@ -46,10 +46,10 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
       include = DataStoreContentionException.class,
       backoff =
           @Backoff(
-              delayExpression = "#{${cloudStorage.backoffInitial}}",
-              multiplierExpression = "#{${cloudStorage.backoffMultiplier}}",
-              maxDelayExpression = "#{${cloudStorage.backoffMax}}"),
-      maxAttemptsExpression = "#{${cloudStorage.backoffMaxAttempts}}",
+              delayExpression = "#{${cloud-storage.backoff.initial}}",
+              multiplierExpression = "#{${cloud-storage.backoff.multiplier}}",
+              maxDelayExpression = "#{${cloud-storage.backoff.max}}"),
+      maxAttemptsExpression = "#{${cloud-storage.backoff.max-attempts}}",
       listeners = "cloudRetryListener")
   public void storeWithRetry(final String schema, final String key, final Object value)
       throws CTPException, DataStoreContentionException {
