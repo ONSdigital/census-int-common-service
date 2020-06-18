@@ -3,8 +3,6 @@ package uk.gov.ons.ctp.common.cloud;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,8 +26,6 @@ import org.springframework.test.util.ReflectionTestUtils;
  */
 @Ignore
 public class Firestore_IT {
-
-  private static final String FIRESTORE_CREDENTIALS_ENV_NAME = "GOOGLE_APPLICATION_CREDENTIALS";
   private static final String FIRESTORE_PROJECT_ENV_NAME = "GOOGLE_CLOUD_PROJECT";
   private static final String TEST_SCHEMA = "IT_TEST_SCHEMA";
 
@@ -57,16 +53,9 @@ public class Firestore_IT {
   @BeforeClass
   public static void setUp() {
     firestoreDataStore = new FirestoreDataStore();
-    firestoreDataStore.connect();
-
-    String googleCredentials = System.getenv(FIRESTORE_CREDENTIALS_ENV_NAME);
-    String googleProjectName = System.getenv(FIRESTORE_PROJECT_ENV_NAME);
-    System.out.printf(
-        "Connecting to Firestore project '%s' using credentials at '%s'\n",
-        googleProjectName, googleCredentials);
-    Firestore firestore = FirestoreOptions.getDefaultInstance().getService();
-
-    ReflectionTestUtils.setField(firestoreDataStore, "firestore", firestore);
+    ReflectionTestUtils.setField(
+        firestoreDataStore, "gcpProject", System.getenv(FIRESTORE_PROJECT_ENV_NAME));
+    firestoreDataStore.create();
   }
 
   @Before

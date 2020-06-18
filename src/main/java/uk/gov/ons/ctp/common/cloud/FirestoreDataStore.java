@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
@@ -32,7 +33,8 @@ public class FirestoreDataStore implements CloudDataStore {
 
   private Firestore firestore;
 
-  public void connect() {
+  @PostConstruct
+  public void create() {
     log.info("Connecting to Firestore project {}", gcpProject);
     firestore = FirestoreOptions.getDefaultInstance().getService();
   }
@@ -154,6 +156,8 @@ public class FirestoreDataStore implements CloudDataStore {
   /**
    * Read an object from Firestore.
    *
+   * @param <T> The object type that results should be returned in.
+   * @param target the class of the object type that results should be returned in.
    * @param schema - is the name of the collection which holds the object.
    * @param key - identifies the object within the collection.
    * @return - Optional containing the object if it was found, otherwise the optional will contain
@@ -199,12 +203,13 @@ public class FirestoreDataStore implements CloudDataStore {
   /**
    * Runs a firestore object search. This returns objects whose field is equal to the search value.
    *
-   * @param target is the object type that results should be returned in.
+   * @param <T> The object type that results should be returned in.
+   * @param target the class of the object type that results should be returned in.
    * @param schema is the schema to search.
    * @param fieldPathElements is an array of strings that describe the path to the search field. eg,
    *     [ "case", "addresss", "postcode" ]
    * @param searchValue is the value that the field must equal for it to be returned as a result.
-   * @return An optional which contains a List of results.
+   * @return the List of results.
    * @throws CTPException if anything goes wrong.
    */
   public <T> List<T> search(
