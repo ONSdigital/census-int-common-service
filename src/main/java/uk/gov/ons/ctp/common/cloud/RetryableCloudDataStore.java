@@ -36,6 +36,7 @@ public interface RetryableCloudDataStore {
    * @param schema the name of the collection which holds the object.
    * @param key identifies the object within the collection.
    * @return Optional containing the object if it was found.
+   * @throws CTPException on error
    */
   <T> Optional<T> retrieveObject(Class<T> target, final String schema, final String key)
       throws CTPException;

@@ -58,6 +58,7 @@ public class YmlConfigReader {
   /**
    * This method uses Jackson to convert the current state of the property data into a Java object.
    *
+   * @param <T> The result object type.
    * @param clazz is the class to convert the data into.
    * @return Object containing the configuration date.
    * @throws CTPException if the conversion failed.
