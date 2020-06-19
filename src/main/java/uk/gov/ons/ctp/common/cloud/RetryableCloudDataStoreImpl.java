@@ -9,23 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /**
- * Decorator for <code>CloudDataStore</code>. It is responsible for handling exponential backoffs
- * when the datastore is becoming overloaded.
+ * Decorator for {@link CloudDataStore}. It is responsible for handling exponential backoffs when
+ * the datastore is becoming overloaded.
  */
 @Service
 public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
   private static final Logger log = LoggerFactory.getLogger(RetryableCloudDataStoreImpl.class);
 
   private CloudDataStore cloudDataStore;
+  private LocalStore localStore;
 
   @Autowired
-  public RetryableCloudDataStoreImpl(CloudDataStore cloudDataStore) {
+  public RetryableCloudDataStoreImpl(CloudDataStore cloudDataStore, LocalStore localStore) {
     this.cloudDataStore = cloudDataStore;
+    this.localStore = localStore;
   }
 
   @Override
@@ -33,27 +36,12 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
       final String schema, final String key, final Object value, final String id)
       throws CTPException {
     try {
-      this.storeWithRetry(schema, key, value);
+      localStore.storeWithRetry(schema, key, value);
     } catch (DataStoreContentionException e) {
-      String identity = value.getClass().getName() + ": " + id;
+      String identity = value.getClass().getSimpleName() + ": " + id;
       log.error("Retries exhausted for storage of {}", identity);
       throw new CTPException(Fault.SYSTEM_ERROR, e, "Retries exhausted for storage of " + identity);
     }
-  }
-
-  @Retryable(
-      label = "storeObject",
-      include = DataStoreContentionException.class,
-      backoff =
-          @Backoff(
-              delayExpression = "#{${cloud-storage.backoff.initial}}",
-              multiplierExpression = "#{${cloud-storage.backoff.multiplier}}",
-              maxDelayExpression = "#{${cloud-storage.backoff.max}}"),
-      maxAttemptsExpression = "#{${cloud-storage.backoff.max-attempts}}",
-      listeners = "cloudRetryListener")
-  public void storeWithRetry(final String schema, final String key, final Object value)
-      throws CTPException, DataStoreContentionException {
-    cloudDataStore.storeObject(schema, key, value);
   }
 
   @Override
@@ -86,5 +74,34 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
   public void doRecover(Exception e) throws Exception {
     log.with(e.getMessage()).debug("Datastore recovery throwing exception");
     throw e;
+  }
+
+  /**
+   * We need another class for the retryable annotation, since calling a retryable annotated within
+   * the same class does not honour the annotations.
+   */
+  @Component
+  static class LocalStore {
+    private CloudDataStore cloudDataStore;
+
+    @Autowired
+    public LocalStore(CloudDataStore cloudDataStore) {
+      this.cloudDataStore = cloudDataStore;
+    }
+
+    @Retryable(
+        label = "storeObject",
+        include = DataStoreContentionException.class,
+        backoff =
+            @Backoff(
+                delayExpression = "#{${cloud-storage.backoff.initial}}",
+                multiplierExpression = "#{${cloud-storage.backoff.multiplier}}",
+                maxDelayExpression = "#{${cloud-storage.backoff.max}}"),
+        maxAttemptsExpression = "#{${cloud-storage.backoff.max-attempts}}",
+        listeners = "cloudRetryListener")
+    public void storeWithRetry(final String schema, final String key, final Object value)
+        throws CTPException, DataStoreContentionException {
+      cloudDataStore.storeObject(schema, key, value);
+    }
   }
 }

@@ -26,9 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +36,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FirestoreDataStoreTest {
-  private static final DummyCase CASE1 = new DummyCase("1", new DummyContact("jo"));
-  private static final DummyCase CASE2 = new DummyCase("2", new DummyContact("Iain"));
-  private static final String TEST_SCHEMA = "IT_TEST_SCHEMA";
+public class FirestoreDataStoreTest extends CloudTestBase {
 
   private static FirestoreDataStore firestoreDataStore = new FirestoreDataStore();
 
@@ -51,21 +45,6 @@ public class FirestoreDataStoreTest {
   @Before
   public void setUp() {
     ReflectionTestUtils.setField(firestoreDataStore, "firestore", firestore);
-  }
-
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  static class DummyCase {
-    private String id;
-    private DummyContact contact;
-  }
-
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  static class DummyContact {
-    private String forename;
   }
 
   @Test
@@ -110,7 +89,7 @@ public class FirestoreDataStoreTest {
     try {
       firestoreDataStore.storeObject(TEST_SCHEMA, CASE1.getId(), CASE1);
     } catch (DataStoreContentionException e) {
-      assertTrue(e.getMessage(), e.getMessage().contains("contention on schema 'IT_TEST_SCHEMA'"));
+      assertTrue(e.getMessage(), e.getMessage().contains("contention on schema 'TEST_SCHEMA'"));
       exceptionCaught = true;
     }
     assertTrue("Failed to detect datastore contention", exceptionCaught);

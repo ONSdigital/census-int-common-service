@@ -3,11 +3,33 @@ package uk.gov.ons.ctp.common.cloud;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
- * Abstraction to a document data store in the cloud, with robust retry capability during store
+ * Abstraction for a document data store in the cloud, with robust retry capability during store
  * operation.
+ *
+ * <p>In order to use this class the client must apply the configuration annotation {@link
+ * EnableRetry}.
+ *
+ * <p>Here is an example of the application properties that must be configured to control retry
+ * characteristics (in a YAML style as you might place in Spring Boot <code>application.yaml</code>:
+ *
+ * <pre>
+ * cloud-storage:
+ *   backoff:
+ *     initial: 100
+ *     multiplier: 1.2
+ *     max: 16000
+ *     max-attempts: 30
+ * </pre>
+ *
+ * <p>The example above, will retry a maximum of 30 times, or a maximum delay of 16 seconds. The
+ * initial retry delay is 100 mSec. Each subsequent retry will be 1.2 times as long as the previous.
+ *
+ * <p>See {@link Backoff} annotation for more information on the backoff parameters.
  */
 public interface RetryableCloudDataStore {
 

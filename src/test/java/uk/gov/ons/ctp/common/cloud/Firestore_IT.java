@@ -6,9 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -25,30 +22,9 @@ import org.springframework.test.util.ReflectionTestUtils;
  * census-rh-peterb
  */
 @Ignore
-public class Firestore_IT {
+public class Firestore_IT extends CloudTestBase {
   private static final String FIRESTORE_PROJECT_ENV_NAME = "GOOGLE_CLOUD_PROJECT";
-  private static final String TEST_SCHEMA = "IT_TEST_SCHEMA";
-
-  private static final DummyCase CASE1 = new DummyCase("1", new DummyContact("jo", "Smith"));
-  private static final DummyCase CASE2 = new DummyCase("2", new DummyContact("Iain", "Smith"));
-
   private static FirestoreDataStore firestoreDataStore;
-
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  static class DummyCase {
-    private String id;
-    private DummyContact contact;
-  }
-
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  static class DummyContact {
-    private String forename;
-    private String surname;
-  }
 
   @BeforeClass
   public static void setUp() {

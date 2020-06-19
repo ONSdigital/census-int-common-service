@@ -6,12 +6,12 @@ import java.util.Set;
 import uk.gov.ons.ctp.common.error.CTPException;
 
 /**
- * Abstraction to a document data store in the cloud.
+ * Abstraction for a document data store in the cloud.
  *
- * <p>Clients should choose the <code>RetryableCloudDataStore</code> instead, for more robust
- * operation.
+ * <p>In most cases, clients of this code should choose the {@link RetryableCloudDataStore} instead,
+ * for more robust operation, especially if high volumes of traffic are expected.
  */
-interface CloudDataStore {
+public interface CloudDataStore {
 
   void storeObject(final String schema, final String key, final Object value)
       throws CTPException, DataStoreContentionException;
