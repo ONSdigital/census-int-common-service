@@ -39,25 +39,6 @@ public class FirestoreDataStore implements CloudDataStore {
     firestore = FirestoreOptions.getDefaultInstance().getService();
   }
 
-  // FIXME
-  private static long count = 0;
-  private static long count2 = 1;
-
-  private void testing() throws DataStoreContentionException {
-    String schema = "ROBC";
-
-    if (count++ % 50 == 0 || count2 % 3 == 0) {
-      count2++;
-      // log.with("schema", schema + count).with("key", key + count2).info("Firestore contention
-      // detected");
-      log.info("Firestore contention detected count: {} count2: {}", count, count2);
-      throw new DataStoreContentionException(
-          "Firestore contention on schema '" + schema + "'", new Exception());
-    }
-  }
-
-  // FIXME
-
   /**
    * Write object to Firestore collection. If the collection already holds an object with the
    * specified key then the contents of the value will be overwritten.
@@ -75,8 +56,6 @@ public class FirestoreDataStore implements CloudDataStore {
   public void storeObject(final String schema, final String key, final Object value)
       throws CTPException, DataStoreContentionException {
     log.with(schema).with(key).debug("Saving object to Firestore");
-
-    // testing(); // FIXME
 
     // Store the object
     ApiFuture<WriteResult> result = firestore.collection(schema).document(key).set(value);
