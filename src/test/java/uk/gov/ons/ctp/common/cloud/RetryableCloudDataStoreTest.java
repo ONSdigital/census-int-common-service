@@ -29,16 +29,17 @@ public class RetryableCloudDataStoreTest extends CloudTestBase {
 
   @Mock private CloudDataStore cloudDataStore;
 
-  private RetryableCloudDataStoreImpl.LocalStore internalStore;
+  private RetryableCloudDataStoreImpl.Retrier retrier;
 
   @InjectMocks private RetryableCloudDataStoreImpl retryDataStoreImpl;
 
   private RetryableCloudDataStore retryDataStore;
+  private RetryConfig retryConfig = new RetryConfig();
 
   @Before
   public void setup() {
-    internalStore = new RetryableCloudDataStoreImpl.LocalStore(cloudDataStore);
-    ReflectionTestUtils.setField(retryDataStoreImpl, "localStore", internalStore);
+    retrier = new RetryableCloudDataStoreImpl.Retrier(cloudDataStore, retryConfig);
+    ReflectionTestUtils.setField(retryDataStoreImpl, "retrier", retrier);
     retryDataStore = retryDataStoreImpl;
   }
 

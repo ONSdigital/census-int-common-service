@@ -23,12 +23,12 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
   private static final Logger log = LoggerFactory.getLogger(RetryableCloudDataStoreImpl.class);
 
   private CloudDataStore cloudDataStore;
-  private LocalStore localStore;
+  private Retrier retrier;
 
   @Autowired
-  public RetryableCloudDataStoreImpl(CloudDataStore cloudDataStore, LocalStore localStore) {
+  public RetryableCloudDataStoreImpl(CloudDataStore cloudDataStore, Retrier retrier) {
     this.cloudDataStore = cloudDataStore;
-    this.localStore = localStore;
+    this.retrier = retrier;
   }
 
   @Override
@@ -36,7 +36,7 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
       final String schema, final String key, final Object value, final String id)
       throws CTPException {
     try {
-      localStore.storeWithRetry(schema, key, value);
+      retrier.store(schema, key, value);
     } catch (DataStoreContentionException e) {
       String identity = value.getClass().getSimpleName() + ": " + id;
       log.error("Retries exhausted for storage of {}", identity);
@@ -81,12 +81,16 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
    * the same class does not honour the annotations.
    */
   @Component
-  static class LocalStore {
+  static class Retrier {
+    private static final Logger log = LoggerFactory.getLogger(Retrier.class);
     private CloudDataStore cloudDataStore;
+    private RetryConfig retryConfig;
 
     @Autowired
-    public LocalStore(CloudDataStore cloudDataStore) {
+    public Retrier(CloudDataStore cloudDataStore, RetryConfig retryConfig) {
       this.cloudDataStore = cloudDataStore;
+      this.retryConfig = retryConfig;
+      log.info("CloudDataStore retry configuration: {}", this.retryConfig);
     }
 
     @Retryable(
@@ -94,12 +98,12 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
         include = DataStoreContentionException.class,
         backoff =
             @Backoff(
-                delayExpression = "#{${cloud-storage.backoff.initial}}",
-                multiplierExpression = "#{${cloud-storage.backoff.multiplier}}",
-                maxDelayExpression = "#{${cloud-storage.backoff.max}}"),
-        maxAttemptsExpression = "#{${cloud-storage.backoff.max-attempts}}",
+                delayExpression = "#{@retryConfig.getInitial()}",
+                multiplierExpression = "#{@retryConfig.getMultiplier()}",
+                maxDelayExpression = "#{@retryConfig.getMax()}"),
+        maxAttemptsExpression = "#{@retryConfig.getMaxAttempts()}",
         listeners = "cloudRetryListener")
-    public void storeWithRetry(final String schema, final String key, final Object value)
+    public void store(final String schema, final String key, final Object value)
         throws CTPException, DataStoreContentionException {
       cloudDataStore.storeObject(schema, key, value);
     }

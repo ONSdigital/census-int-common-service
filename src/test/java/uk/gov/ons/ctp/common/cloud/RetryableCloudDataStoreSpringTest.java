@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,8 +21,10 @@ import uk.gov.ons.ctp.common.error.CTPException;
 import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 @EnableRetry
+@EnableConfigurationProperties
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {RetryableCloudDataStoreImpl.class, CloudRetryListener.class})
+@ContextConfiguration(
+    classes = {RetryableCloudDataStoreImpl.class, CloudRetryListener.class, RetryConfig.class})
 @TestPropertySource(
     properties = {
       "cloud-storage.backoff.initial=10",
