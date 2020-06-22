@@ -35,10 +35,8 @@ public class CTPExceptionTest {
    */
   @Test
   public void testFaultOnly() throws Exception {
-
     CTPException ctpe = new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND);
     String result = write(ctpe);
-    System.out.println(result);
 
     assertEquals("RESOURCE_NOT_FOUND", (String) JsonPath.read(result, "$.error.code"));
     assertEquals("Non Specific Error", (String) JsonPath.read(result, "$.error.message"));
@@ -56,7 +54,6 @@ public class CTPExceptionTest {
     NullPointerException npe = new NullPointerException("Testing is great");
     CTPException ctpe = new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, npe);
     String result = write(ctpe);
-    System.out.println(result);
 
     assertEquals("RESOURCE_NOT_FOUND", (String) JsonPath.read(result, "$.error.code"));
     assertEquals("Testing is great", (String) JsonPath.read(result, "$.error.message"));
@@ -75,7 +72,6 @@ public class CTPExceptionTest {
     CTPException ctpe =
         new CTPException(CTPException.Fault.RESOURCE_NOT_FOUND, "Testing %d %d %s", 1, 2, "three");
     String result = write(ctpe);
-    System.out.println(result);
 
     assertEquals("RESOURCE_NOT_FOUND", (String) JsonPath.read(result, "$.error.code"));
     assertEquals("Testing 1 2 three", (String) JsonPath.read(result, "$.error.message"));
@@ -96,7 +92,6 @@ public class CTPExceptionTest {
         new CTPException(
             CTPException.Fault.RESOURCE_NOT_FOUND, npe, "Testing %d %d %s", 1, 2, "three");
     String result = write(ctpe);
-    System.out.println(result);
 
     assertEquals("RESOURCE_NOT_FOUND", (String) JsonPath.read(result, "$.error.code"));
     assertEquals("Testing 1 2 three", (String) JsonPath.read(result, "$.error.message"));
