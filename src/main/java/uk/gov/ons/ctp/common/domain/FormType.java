@@ -3,5 +3,5 @@ package uk.gov.ons.ctp.common.domain;
 public enum FormType {
   H,
   I,
-  CE1
+  C
 }
