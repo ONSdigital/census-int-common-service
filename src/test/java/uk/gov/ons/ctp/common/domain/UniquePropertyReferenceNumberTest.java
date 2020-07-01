@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 import org.junit.Test;
 
 public class UniquePropertyReferenceNumberTest {
-  private static final String UPRN_STR = "334111111111";
+  private static final String UPRN_STR = "3341111111111";
   private static final UniquePropertyReferenceNumber A_UPRN =
       new UniquePropertyReferenceNumber(UPRN_STR);
   private static final UniquePropertyReferenceNumber ANOTHER_UPRN =
