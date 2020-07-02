@@ -11,9 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UniquePropertyReferenceNumber {
-  public static final String UPRN_RE = "^\\d{1,12}$";
+  public static final String UPRN_RE = "^\\d{1,13}$";
   public static final long UPRN_MIN = 0L;
-  public static final long UPRN_MAX = 999999999999L;
+  public static final long UPRN_MAX = 9999999999999L;
 
   @JsonCreator
   public static UniquePropertyReferenceNumber create(String uprn) {
