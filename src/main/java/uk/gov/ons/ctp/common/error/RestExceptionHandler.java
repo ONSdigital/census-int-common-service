@@ -2,6 +2,10 @@ package uk.gov.ons.ctp.common.error;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +29,22 @@ public class RestExceptionHandler {
 
   public static final String INVALID_JSON = "Provided json fails validation.";
   public static final String PROVIDED_JSON_INCORRECT = "Provided json is incorrect.";
-  public static final String PROVIDED_XML_INCORRECT = "Provided xml is incorrect.";
 
-  private static final String XML_ERROR_MESSAGE = "Could not unmarshal to";
+  // Regex patterns used to produce a summary of the root cause of errors
+  List<Pattern> exceptionScrapers =
+      Arrays.asList(
+          // Multiple error catch all
+          Pattern.compile("Validation failed .* with ([0-9]* errors: .*)"),
+          // For enums
+          Pattern.compile("(JSON parse error: .*); nested exception is .*"),
+          // For @NotNull
+          Pattern.compile(
+              ".*(Field error in object .* rejected value \\[null]; ).*(default message .*)"),
+          // For @Pattern
+          Pattern.compile(
+              ".*(field.*rejected value.*?;).*(constraints.Pattern).*( ).*(must match.*)]]"),
+          // For @Size & @NotBlank
+          Pattern.compile("error .* on (field.*?; ).*default message \\[(.*)]]"));
 
   /**
    * CTPException Handler
@@ -269,10 +286,7 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
     log.error("Uncaught HttpMessageNotReadableException", ex);
-    String message =
-        ex.getMessage().startsWith(XML_ERROR_MESSAGE)
-            ? PROVIDED_XML_INCORRECT
-            : PROVIDED_JSON_INCORRECT;
+    String message = createErrorMessage(ex);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
@@ -293,7 +307,27 @@ public class RestExceptionHandler {
     log.with("parameter", ex.getParameter().getParameterName())
         .warn("Uncaught MethodArgumentNotValidException", ex);
     CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, createErrorMessage(ex));
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  private String createErrorMessage(Exception ex) {
+    // By default we return the message text, unless we can scrape out a better explanation
+    String messageDetail = ex.getMessage();
+
+    // Attempt to extract key content of exception message
+    for (Pattern pattern : exceptionScrapers) {
+      Matcher matcher = pattern.matcher(ex.getMessage());
+      if (matcher.find()) {
+        StringBuilder messageExtracts = new StringBuilder();
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+          messageExtracts.append(matcher.group(i));
+        }
+        messageDetail = messageExtracts.toString();
+        break;
+      }
+    }
+    
+    return PROVIDED_JSON_INCORRECT + " Caused by: " + messageDetail.trim();
   }
 }
