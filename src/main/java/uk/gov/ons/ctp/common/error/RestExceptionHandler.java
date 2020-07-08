@@ -307,9 +307,8 @@ public class RestExceptionHandler {
     String message = createCleanedUpErrorMessage(ex);
     log.with("parameter", ex.getParameter().getParameterName())
         .info("Uncaught MethodArgumentNotValidException. " + message);
-    
-    CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
+
+    CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
   }
 
