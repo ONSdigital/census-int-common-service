@@ -285,8 +285,8 @@ public class RestExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
-    log.error("Uncaught HttpMessageNotReadableException", ex);
     String message = createCleanedUpErrorMessage(ex);
+    log.info("Uncaught HttpMessageNotReadableException. " + message);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
@@ -304,10 +304,12 @@ public class RestExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
+    String message = createCleanedUpErrorMessage(ex);
     log.with("parameter", ex.getParameter().getParameterName())
-        .warn("Uncaught MethodArgumentNotValidException", ex);
+        .info("Uncaught MethodArgumentNotValidException. " + message);
+    
     CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, createCleanedUpErrorMessage(ex));
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
   }
 
