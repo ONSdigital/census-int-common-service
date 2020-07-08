@@ -286,7 +286,7 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
     log.error("Uncaught HttpMessageNotReadableException", ex);
-    String message = createErrorMessage(ex);
+    String message = createCleanedUpErrorMessage(ex);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
@@ -307,11 +307,20 @@ public class RestExceptionHandler {
     log.with("parameter", ex.getParameter().getParameterName())
         .warn("Uncaught MethodArgumentNotValidException", ex);
     CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, createErrorMessage(ex));
+        new CTPException(CTPException.Fault.VALIDATION_FAILED, createCleanedUpErrorMessage(ex));
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
   }
 
-  private String createErrorMessage(Exception ex) {
+  /**
+   * This method creates explanatory response text for an exception. It cleans up the exception
+   * message and attempts to provide a concise reason for the error without internal class names or
+   * error repetition.
+   *
+   * @param ex is the exception to create a message for.
+   * @return a String with simplified error text, or if it doesn't fit an existing pattern an error
+   *     string with the exceptions message text.
+   */
+  private String createCleanedUpErrorMessage(Exception ex) {
     // By default we return the message text, unless we can scrape out a better explanation
     String messageDetail = ex.getMessage();
 
