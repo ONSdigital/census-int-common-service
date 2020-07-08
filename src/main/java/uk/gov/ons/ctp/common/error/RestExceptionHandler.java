@@ -327,7 +327,7 @@ public class RestExceptionHandler {
         break;
       }
     }
-    
+
     return PROVIDED_JSON_INCORRECT + " Caused by: " + messageDetail.trim();
   }
 }
