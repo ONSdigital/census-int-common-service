@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -146,7 +146,7 @@ public class RestClientTest {
     } catch (ResponseStatusException e) {
       mockServer.verify();
       assertEquals(defaultHttpStatus, e.getStatus());
-      assertEquals(HttpStatus.CONFLICT, ((HttpClientErrorException) e.getCause()).getStatusCode());
+      assertEquals(HttpStatus.CONFLICT, ((HttpStatusCodeException) e.getCause()).getStatusCode());
     }
   }
 
@@ -177,7 +177,7 @@ public class RestClientTest {
     } catch (ResponseStatusException e) {
       mockServer.verify();
       assertEquals(HttpStatus.I_AM_A_TEAPOT, e.getStatus());
-      assertEquals(HttpStatus.CONFLICT, ((HttpClientErrorException) e.getCause()).getStatusCode());
+      assertEquals(HttpStatus.CONFLICT, ((HttpStatusCodeException) e.getCause()).getStatusCode());
     }
   }
 
@@ -243,7 +243,7 @@ public class RestClientTest {
       mockServer.verify();
       assertEquals(mapStatus, e.getStatus());
       if (cause) {
-        assertEquals(responseStatus, ((HttpClientErrorException) e.getCause()).getStatusCode());
+        assertEquals(responseStatus, ((HttpStatusCodeException) e.getCause()).getStatusCode());
       } else {
         assertNull(e.getCause());
       }
