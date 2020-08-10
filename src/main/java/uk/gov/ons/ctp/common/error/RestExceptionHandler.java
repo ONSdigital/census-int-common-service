@@ -2,6 +2,10 @@ package uk.gov.ons.ctp.common.error;
 
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +29,22 @@ public class RestExceptionHandler {
 
   public static final String INVALID_JSON = "Provided json fails validation.";
   public static final String PROVIDED_JSON_INCORRECT = "Provided json is incorrect.";
-  public static final String PROVIDED_XML_INCORRECT = "Provided xml is incorrect.";
 
-  private static final String XML_ERROR_MESSAGE = "Could not unmarshal to";
+  // Regex patterns used to produce a summary of the root cause of errors
+  List<Pattern> exceptionScrapers =
+      Arrays.asList(
+          // Multiple error catch all
+          Pattern.compile("Validation failed .* with ([0-9]* errors: .*)"),
+          // For enums
+          Pattern.compile("(JSON parse error: .*); nested exception is .*"),
+          // For @NotNull
+          Pattern.compile(
+              ".*(Field error in object .* rejected value \\[null]; ).*(default message .*)"),
+          // For @Pattern
+          Pattern.compile(
+              ".*(field.*rejected value.*?;).*(constraints.Pattern).*( ).*(must match.*)]]"),
+          // For @Size & @NotBlank
+          Pattern.compile("error .* on (field.*?; ).*default message \\[(.*)]]"));
 
   /**
    * CTPException Handler
@@ -268,11 +285,8 @@ public class RestExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
-    log.error("Uncaught HttpMessageNotReadableException", ex);
-    String message =
-        ex.getMessage().startsWith(XML_ERROR_MESSAGE)
-            ? PROVIDED_XML_INCORRECT
-            : PROVIDED_JSON_INCORRECT;
+    String message = createCleanedUpErrorMessage(ex);
+    log.info("Uncaught HttpMessageNotReadableException. " + message);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
@@ -290,10 +304,40 @@ public class RestExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException ex) {
+    String message = createCleanedUpErrorMessage(ex);
     log.with("parameter", ex.getParameter().getParameterName())
-        .warn("Uncaught MethodArgumentNotValidException", ex);
-    CTPException ourException =
-        new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
+        .info("Uncaught MethodArgumentNotValidException. " + message);
+
+    CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * This method creates explanatory response text for an exception. It cleans up the exception
+   * message and attempts to provide a concise reason for the error without internal class names or
+   * error repetition.
+   *
+   * @param ex is the exception to create a message for.
+   * @return a String with simplified error text, or if it doesn't fit an existing pattern an error
+   *     string with the exceptions message text.
+   */
+  private String createCleanedUpErrorMessage(Exception ex) {
+    // By default we return the message text, unless we can scrape out a better explanation
+    String messageDetail = ex.getMessage();
+
+    // Attempt to extract key content of exception message
+    for (Pattern pattern : exceptionScrapers) {
+      Matcher matcher = pattern.matcher(ex.getMessage());
+      if (matcher.find()) {
+        StringBuilder messageExtracts = new StringBuilder();
+        for (int i = 1; i <= matcher.groupCount(); i++) {
+          messageExtracts.append(matcher.group(i));
+        }
+        messageDetail = messageExtracts.toString();
+        break;
+      }
+    }
+
+    return PROVIDED_JSON_INCORRECT + " Caused by: " + messageDetail.trim();
   }
 }
