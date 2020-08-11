@@ -1,6 +1,7 @@
 package uk.gov.ons.ctp.common.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -110,6 +112,7 @@ public class RestClientTest {
     } catch (ResponseStatusException e) {
       mockServer.verify();
       assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatus());
+      assertNull(e.getCause());
     }
   }
 
@@ -143,6 +146,7 @@ public class RestClientTest {
     } catch (ResponseStatusException e) {
       mockServer.verify();
       assertEquals(defaultHttpStatus, e.getStatus());
+      assertEquals(HttpStatus.CONFLICT, ((HttpStatusCodeException) e.getCause()).getStatusCode());
     }
   }
 
@@ -173,32 +177,7 @@ public class RestClientTest {
     } catch (ResponseStatusException e) {
       mockServer.verify();
       assertEquals(HttpStatus.I_AM_A_TEAPOT, e.getStatus());
-    }
-  }
-
-  /** A test */
-  @Test
-  public void testGetResourceNotFound() {
-    RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
-    RestClient restClient = new RestClient(config);
-
-    RestTemplate restTemplate = restClient.getRestTemplate();
-    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels/42"))
-        .andExpect(method(HttpMethod.GET))
-        .andRespond(
-            withStatus(HttpStatus.NOT_FOUND)
-                .body(
-                    "{ \"error\" :{  \"code\" : \"123\", \"message\" : \"123\", \"timestamp\" : \"123\"}}"));
-
-    try {
-      restClient.getResource("/hotels/{hotelId}", FakeDTO.class, "42");
-      fail();
-    } catch (ResponseStatusException e) {
-      mockServer.verify();
-      assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+      assertEquals(HttpStatus.CONFLICT, ((HttpStatusCodeException) e.getCause()).getStatusCode());
     }
   }
 
@@ -224,40 +203,28 @@ public class RestClientTest {
   }
 
   /** A test */
-  @Test(expected = ResponseStatusException.class)
+  @Test
+  public void testGetResourceNotFound() {
+    mockRequest(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND, true);
+  }
+
+  /** A test */
   public void testGetResourcesNoContent() {
-    RestClient restClient = new RestClient();
-    RestTemplate restTemplate = restClient.getRestTemplate();
-
-    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels"))
-        .andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.NO_CONTENT));
-
-    restClient.getResources("/hotels", FakeDTO[].class);
+    mockRequest(HttpStatus.NO_CONTENT, HttpStatus.INTERNAL_SERVER_ERROR, false);
   }
 
   /** A test */
-  @Test(expected = ResponseStatusException.class)
   public void testGetResourcesReallyNotOk() {
-    RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
-    RestClient restClient = new RestClient(config);
-    RestTemplate restTemplate = restClient.getRestTemplate();
-
-    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
-    mockServer
-        .expect(requestTo("http://localhost:8080/hotels"))
-        .andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.BAD_REQUEST));
-
-    restClient.getResources("/hotels", FakeDTO[].class);
+    mockRequest(HttpStatus.BAD_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR, true);
   }
 
   /** A test */
-  @Test(expected = ResponseStatusException.class)
+  @Test
   public void testGetResourcesUnauthorized() {
+    mockRequest(HttpStatus.UNAUTHORIZED, HttpStatus.INTERNAL_SERVER_ERROR, true);
+  }
+
+  private void mockRequest(HttpStatus responseStatus, HttpStatus mapStatus, boolean cause) {
     RestClientConfig config =
         RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
     RestClient restClient = new RestClient(config);
@@ -267,8 +234,19 @@ public class RestClientTest {
     mockServer
         .expect(requestTo("http://localhost:8080/hotels"))
         .andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
+        .andRespond(withStatus(responseStatus));
 
-    restClient.getResources("/hotels", FakeDTO[].class);
+    try {
+      restClient.getResources("/hotels", FakeDTO[].class);
+      fail();
+    } catch (ResponseStatusException e) {
+      mockServer.verify();
+      assertEquals(mapStatus, e.getStatus());
+      if (cause) {
+        assertEquals(responseStatus, ((HttpStatusCodeException) e.getCause()).getStatusCode());
+      } else {
+        assertNull(e.getCause());
+      }
+    }
   }
 }

@@ -169,7 +169,7 @@ public class RestClient {
         log.error(errorMessage, e);
       }
       throw new ResponseStatusException(
-          mapToExternalStatus(e.getStatusCode()), "Unsuccessful response code");
+          mapToExternalStatus(e.getStatusCode()), "Unsuccessful response code", e);
     } catch (RestClientException e) {
       log.error("GET failed for path: '" + uriComponents + "'", e);
       throw new ResponseStatusException(
