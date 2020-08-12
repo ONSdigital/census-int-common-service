@@ -15,7 +15,6 @@ This project contains project Java coding standards in the form of Checkstyle co
 mvn --update-snapshots
 ```
 
-
 # Code Styler
 To use the code styler please goto this url (https://github.com/google/google-java-format) and follow the Intellij instructions or Eclipse depending on what you use
 
