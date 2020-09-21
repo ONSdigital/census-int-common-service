@@ -5,7 +5,7 @@ import java.util.Optional;
 public enum EstabType {
   // code for OTHER deliberate - if AIMS code is actually "" or "Floating Caravan Palace"
   // either way forCode() will return OTHER
-  OTHER("", null, SecurityType.NOT_SECURE),
+  OTHER("OTHER", null, SecurityType.NOT_SECURE),
   HALL_OF_RESIDENCE("HALL OF RESIDENCE", AddressType.CE, SecurityType.NOT_SECURE),
   CARE_HOME("CARE HOME", AddressType.CE, SecurityType.NOT_SECURE),
   HOSPITAL("HOSPITAL", AddressType.CE, SecurityType.NOT_SECURE),
