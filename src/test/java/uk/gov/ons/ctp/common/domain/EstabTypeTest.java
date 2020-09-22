@@ -45,6 +45,5 @@ public class EstabTypeTest {
     assertEquals(EstabType.OTHER, otherEstabType);
     // and that OTHER addressType is empty optional
     assert (otherEstabType.getAddressType().isEmpty());
-    assert (otherEstabType.getCode().equals("OTHER"));
   }
 }
