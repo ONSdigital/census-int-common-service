@@ -53,8 +53,7 @@ public class StringUtils {
    *     are suitable.
    */
   public static String selectFirstNonBlankString(String... candidateStrings) {
-    return Arrays.asList(candidateStrings)
-        .stream()
+    return Arrays.asList(candidateStrings).stream()
         .filter(s -> !org.apache.commons.lang3.StringUtils.isBlank(s))
         .findFirst()
         .orElseGet(() -> "");
