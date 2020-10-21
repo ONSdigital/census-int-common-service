@@ -113,6 +113,19 @@ public class RestExceptionHandlerTest {
   }
 
   @Test
+  public void handleCTPException_TOO_MANY_REQUESTS() throws Exception {
+    Mockito.doThrow(new CTPException(Fault.TOO_MANY_REQUESTS)).when(testController).runTest();
+
+    MockHttpServletResponse response =
+        mockMvc
+            .perform(get("/test/run"))
+            .andExpect(status().isTooManyRequests())
+            .andReturn()
+            .getResponse();
+    assertTrue(response.getContentAsString().contains(Fault.TOO_MANY_REQUESTS.toString()));
+  }
+
+  @Test
   public void handleCTPException_SYSTEM_ERROR() throws Exception {
     Mockito.doThrow(new CTPException(Fault.SYSTEM_ERROR)).when(testController).runTest();
 
@@ -198,6 +211,21 @@ public class RestExceptionHandlerTest {
             .andReturn()
             .getResponse();
     assertTrue(response.getContentAsString().contains(Fault.BAD_REQUEST.toString()));
+  }
+
+  @Test
+  public void handleResponseStatusException_TOO_MANY_REQUESTS() throws Exception {
+    Mockito.doThrow(new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS))
+        .when(testController)
+        .runTest();
+
+    MockHttpServletResponse response =
+        mockMvc
+            .perform(get("/test/run"))
+            .andExpect(status().isTooManyRequests())
+            .andReturn()
+            .getResponse();
+    assertTrue(response.getContentAsString().contains(Fault.TOO_MANY_REQUESTS.toString()));
   }
 
   @Test

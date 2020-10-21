@@ -121,7 +121,7 @@ public class RestClient {
    */
   public <T> T getResource(String path, Class<T> clazz, Object... pathParams)
       throws RestClientException {
-    return getResource(path, clazz, null, null, pathParams);
+    return doHttpOperation(HttpMethod.GET, path, null, clazz, null, null, pathParams);
   }
 
   /**
@@ -144,19 +144,49 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws ResponseStatusException {
-    log.debug("Enter getResources for path: {}", path);
+    return doHttpOperation(
+        HttpMethod.GET, path, null, clazz, headerParams, queryParams, pathParams);
+  }
 
-    // Issue GET request to other service
-    HttpEntity<?> httpEntity = createHttpEntity(null, headerParams);
+  /**
+   * Use to perform an http operation GET/PUT/POST to retrieve a single resource
+   *
+   * @param <T> the type that will returned by the server we call
+   * @param <O> is the type of payload to send.
+   * @param method is the type of http call to be made.
+   * @param path the API path - can contain path params place holders in "{}" ie "/cases/{caseid}"
+   * @param objToSend is the object to send as a Put or Post payload.
+   * @param clazz the class type of the resource to be obtained
+   * @param headerParams map of header of params to be used - can be null
+   * @param queryParams multi map of query params keyed by string logically allows for
+   *     K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
+   * @param pathParams vargs list of params to substitute in the path - note simply used in order
+   * @return the type you asked for! or null
+   * @throws ResponseStatusException something went wrong making http call
+   */
+  @SuppressWarnings("unchecked")
+  private <T, O> T doHttpOperation(
+      HttpMethod method,
+      String path,
+      O objToSend,
+      Class<T> clazz,
+      Map<String, String> headerParams,
+      MultiValueMap<String, String> queryParams,
+      Object... pathParams)
+      throws ResponseStatusException {
+    log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
+
+    // Issue http request to other service
+    HttpEntity<?> httpEntity = createHttpEntity(objToSend, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
     ResponseEntity<String> response;
     try {
-      response =
-          restTemplate.exchange(uriComponents.toUri(), HttpMethod.GET, httpEntity, String.class);
+      response = restTemplate.exchange(uriComponents.toUri(), method, httpEntity, String.class);
     } catch (HttpStatusCodeException e) {
       // Failure detected. For 4xx and 5xx status codes
       String errorMessage =
-          "GET failed for path: '"
+          method.name()
+              + " request failed for path: '"
               + uriComponents
               + "' Status: "
               + e.getStatusCode()
@@ -171,7 +201,7 @@ public class RestClient {
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), "Unsuccessful response code", e);
     } catch (RestClientException e) {
-      log.error("GET failed for path: '" + uriComponents + "'", e);
+      log.error(method.name() + " failed for path: '" + uriComponents + "'", e);
       throw new ResponseStatusException(
           HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
     }
@@ -187,23 +217,31 @@ public class RestClient {
               + response.getStatusCode();
       log.error(errorMessage);
       throw new ResponseStatusException(
-          mapToExternalStatus(response.getStatusCode()), "Internal processing error");
+          mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
     }
-    try {
-      responseObject = objectMapper.readValue(responseBody, clazz);
-    } catch (IOException e) {
-      log.error(
-          "Failed to convert response to DTO object. Path: '"
-              + uriComponents
-              + "' Status: "
-              + response.getStatusCodeValue()
-              + " ResponseBody: '"
-              + responseBody
-              + "'",
-          e);
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
+    // Convert response body to target object
+    if (clazz == String.class) {
+      responseObject = (T) responseBody;
+    } else {
+      // Convert Json to target type
+      try {
+        responseObject = objectMapper.readValue(responseBody, clazz);
+      } catch (IOException e) {
+        log.error(
+            "Failed to convert response to DTO object. Path: '"
+                + uriComponents
+                + "' Status: "
+                + response.getStatusCodeValue()
+                + " ResponseBody: '"
+                + responseBody
+                + "'",
+            e);
+        throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
+      }
     }
+
+    log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
 
     return responseObject;
   }
@@ -295,7 +333,7 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws RestClientException {
-    return executePutOrPost(
+    return doHttpOperation(
         HttpMethod.POST, path, objToPost, clazz, headerParams, queryParams, pathParams);
   }
 
@@ -338,48 +376,8 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws RestClientException {
-    return executePutOrPost(
+    return doHttpOperation(
         HttpMethod.PUT, path, objToPut, clazz, headerParams, queryParams, pathParams);
-  }
-
-  /**
-   * used to put or post
-   *
-   * @param <T> the type that will returned by the server we call
-   * @param <O> the type to be sent
-   * @param method put or post
-   * @param path the url path
-   * @param objToPut the object to be sent
-   * @param clazz the expected response object type
-   * @param headerParams map of header params
-   * @param queryParams multi map of query params
-   * @param pathParams var arg path params in {} placeholder order
-   * @return the response object
-   * @throws RestClientException something went wrong calling the server
-   */
-  private <T, O> T executePutOrPost(
-      HttpMethod method,
-      String path,
-      O objToPut,
-      Class<T> clazz,
-      Map<String, String> headerParams,
-      MultiValueMap<String, String> queryParams,
-      Object... pathParams)
-      throws RestClientException {
-    log.debug("Enter executePutOrPost for path : {}", path);
-
-    HttpEntity<O> httpEntity = createHttpEntity(objToPut, headerParams);
-    UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
-
-    ResponseEntity<T> response =
-        restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz);
-
-    if (!response.getStatusCode().is2xxSuccessful()) {
-      log.error("Failed to put/post when calling {}", uriComponents.toUri());
-      throw new RestClientException(
-          "Unexpected response status" + response.getStatusCode().value());
-    }
-    return response.getBody();
   }
 
   /**

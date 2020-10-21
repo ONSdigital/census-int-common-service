@@ -38,6 +38,8 @@ public class CTPException extends Exception {
     ACCESS_DENIED,
     /** For bad requests */
     BAD_REQUEST,
+    /** 429 error for overloaded service */
+    TOO_MANY_REQUESTS,
     /** For operations in progress */
     ACCEPTED_UNABLE_TO_PROCESS;
   }

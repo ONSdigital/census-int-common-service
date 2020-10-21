@@ -2,10 +2,12 @@ package uk.gov.ons.ctp.common.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -33,7 +35,10 @@ public class RestClientTest {
     mockServer
         .expect(requestTo("http://localhost:8080/hotels/42"))
         .andExpect(method(HttpMethod.PUT))
-        .andRespond(withSuccess());
+        .andRespond(
+            withSuccess(
+                "{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"},{ \"hairColor\" : \"brown\", \"shoeSize\" : \"12\"}",
+                MediaType.APPLICATION_JSON));
 
     FakeDTO fakeDTO = new FakeDTO("blue", 52);
     restClient.putResource("/hotels/{hotelId}", fakeDTO, FakeDTO.class, "42");
@@ -52,11 +57,54 @@ public class RestClientTest {
     mockServer
         .expect(requestTo("http://localhost:8080/hotels/42"))
         .andExpect(method(HttpMethod.POST))
-        .andRespond(withSuccess());
+        .andRespond(
+            withSuccess(
+                "{ \"hairColor\" : \"blonde\", \"shoeSize\" : \"8\"},{ \"hairColor\" : \"brown\", \"shoeSize\" : \"12\"}",
+                MediaType.APPLICATION_JSON));
 
     FakeDTO fakeDTO = new FakeDTO("blue", 52);
     restClient.postResource("/hotels/{hotelId}", fakeDTO, FakeDTO.class, "42");
     mockServer.verify();
+  }
+
+  @Test
+  public void testPostResource_StringResponse() {
+    RestClient restClient = new RestClient();
+    RestTemplate restTemplate = restClient.getRestTemplate();
+
+    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+    mockServer
+        .expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.POST))
+        .andRespond(withSuccess("ABC123", MediaType.TEXT_PLAIN));
+
+    FakeDTO fakeDTO = new FakeDTO("blue", 52);
+    String response = restClient.postResource("/hotels/{hotelId}", fakeDTO, String.class, "42");
+    mockServer.verify();
+    assertEquals("ABC123", response);
+  }
+
+  @Test
+  public void testPostResource_NullResponse() {
+    RestClient restClient = new RestClient();
+    RestTemplate restTemplate = restClient.getRestTemplate();
+
+    MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+    mockServer
+        .expect(requestTo("http://localhost:8080/hotels/42"))
+        .andExpect(method(HttpMethod.POST))
+        .andRespond(withNoContent());
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class,
+            () -> {
+              FakeDTO fakeDTO = new FakeDTO("blue", 52);
+              restClient.postResource("/hotels/{hotelId}", fakeDTO, String.class, "42");
+            });
+
+    mockServer.verify();
+    assertTrue(exception.getMessage(), exception.getMessage().contains("No response"));
   }
 
   /** Test that we get a failure when we ask for a connection to a non resolvable host */
