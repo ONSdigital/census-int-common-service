@@ -162,7 +162,7 @@ public class RestClient {
    *     K:"haircolor",V:"blond" AND K:"shoesize", V:"9","10"
    * @param pathParams vargs list of params to substitute in the path - note simply used in order
    * @return the type you asked for! or null
-   * @throws ResponseStatusException something went wrong making http call
+   * @throws ResponseStatusException something went wrong making http call. The reason field will contain the http response body.
    */
   @SuppressWarnings("unchecked")
   private <T, O> T doHttpOperation(
@@ -195,11 +195,14 @@ public class RestClient {
               + "'";
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
         log.warn(errorMessage, e);
+      } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+        // Caller expected to handle this situation
+        log.info("Too many requests response on {} for path: {}", method.name(), path);
       } else {
         log.error(errorMessage, e);
       }
       throw new ResponseStatusException(
-          mapToExternalStatus(e.getStatusCode()), "Unsuccessful response code", e);
+          mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
     } catch (RestClientException e) {
       log.error(method.name() + " failed for path: '" + uriComponents + "'", e);
       throw new ResponseStatusException(
