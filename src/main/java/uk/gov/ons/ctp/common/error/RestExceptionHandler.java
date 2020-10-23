@@ -92,6 +92,9 @@ public class RestExceptionHandler {
       case VALIDATION_FAILED:
         status = HttpStatus.BAD_REQUEST;
         break;
+      case TOO_MANY_REQUESTS:
+        status = HttpStatus.TOO_MANY_REQUESTS;
+        break;
       case SYSTEM_ERROR:
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         break;
@@ -119,6 +122,9 @@ public class RestExceptionHandler {
         break;
       case BAD_REQUEST:
         fault = Fault.BAD_REQUEST;
+        break;
+      case TOO_MANY_REQUESTS:
+        fault = Fault.TOO_MANY_REQUESTS;
         break;
       case INTERNAL_SERVER_ERROR:
         fault = Fault.SYSTEM_ERROR;
