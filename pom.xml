@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.gov.ons.ctp.integration.common</groupId>
   <artifactId>framework</artifactId>
-  <version>0.0.68</version>
+  <version>0.0.69-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>CTP : Integration Common Framework</name>
@@ -195,7 +195,7 @@
     <url>https://github.com/ONSdigital/census-int-common-service</url>
     <connection>scm:git:https://github.com/ONSdigital/census-int-common-service</connection>
     <developerConnection>scm:git:https://github.com/ONSdigital/census-int-common-service</developerConnection>
-    <tag>framework-0.0.68</tag>
+    <tag>HEAD</tag>
   </scm>
 
 </project>
