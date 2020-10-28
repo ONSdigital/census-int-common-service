@@ -59,17 +59,27 @@ public class RestExceptionHandler {
 
     switch (status) {
       case NOT_FOUND:
+        log.with("fault", exception.getFault())
+            .with("message", exception.getMessage())
+            .with("status", status)
+            .warn("The resource looking for is not found", exception);
       case BAD_REQUEST:
+        log.with("fault", exception.getFault())
+            .with("message", exception.getMessage())
+            .with("status", status)
+            .warn("The request made is a bad request", exception);
       case ACCEPTED:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .warn("Handling CTPException", exception);
+            .with("status", status)
+            .warn("The request is accepted  but unable to process", exception);
         break;
 
       default:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .error("Handling CTPException", exception);
+            .with("status", status)
+            .warn("System error has taken place", exception);
         break;
     }
 
