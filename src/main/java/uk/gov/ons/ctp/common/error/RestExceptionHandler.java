@@ -77,7 +77,7 @@ public class RestExceptionHandler {
       default:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .error("System error has taken place", exception);
+            .error("Handling CTPException - System error has taken place", exception);
         break;
     }
 
