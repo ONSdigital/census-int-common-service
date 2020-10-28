@@ -62,10 +62,12 @@ public class RestExceptionHandler {
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
             .warn("Handling CTPException - The resource looking for is not found");
+        break;
       case BAD_REQUEST:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
             .warn("Handling CTPException - The request made is a bad request");
+        break;
       case ACCEPTED:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
