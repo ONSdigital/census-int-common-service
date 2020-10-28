@@ -79,7 +79,7 @@ public class RestExceptionHandler {
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
             .with("status", status)
-            .warn("System error has taken place", exception);
+            .error("System error has taken place", exception);
         break;
     }
 
