@@ -61,24 +61,20 @@ public class RestExceptionHandler {
       case NOT_FOUND:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .with("status", status)
-            .warn("The resource looking for is not found", exception);
+            .warn("The resource looking for is not found");
       case BAD_REQUEST:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .with("status", status)
-            .warn("The request made is a bad request", exception);
+            .warn("The request made is a bad request");
       case ACCEPTED:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .with("status", status)
-            .warn("The request is accepted  but unable to process", exception);
+            .warn("The request is accepted  but unable to process");
         break;
 
       default:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .with("status", status)
             .error("System error has taken place", exception);
         break;
     }
