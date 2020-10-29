@@ -61,23 +61,23 @@ public class RestExceptionHandler {
       case NOT_FOUND:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .warn("Handling CTPException - The resource looking for is not found");
+            .warn("Handling CTPException - The resource was not found");
         break;
       case BAD_REQUEST:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .warn("Handling CTPException - The request made is a bad request");
+            .warn("Handling CTPException - Bad request");
         break;
       case ACCEPTED:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .warn("Handling CTPException - The request is accepted  but unable to process");
+            .warn("Handling CTPException - The request is accepted but unable to process");
         break;
 
       default:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .error("Handling CTPException - System error has taken place", exception);
+            .error("Handling CTPException - System error", exception);
         break;
     }
 
@@ -195,7 +195,7 @@ public class RestExceptionHandler {
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getRootCause())
-        .error("Unhandled MethodArgumentTypeMismatchException", ex);
+        .warn("Unhandled MethodArgumentTypeMismatchException");
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -216,7 +216,7 @@ public class RestExceptionHandler {
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getMessage())
-        .error("Unhandled MethodArgumentTypeMismatchException", ex);
+        .warn("Unhandled MethodArgumentTypeMismatchException");
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -258,7 +258,7 @@ public class RestExceptionHandler {
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getMessage())
-        .error("Unhandled HttpMessageConversionException", ex);
+        .warn("Unhandled HttpMessageConversionException");
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, PROVIDED_JSON_INCORRECT);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -281,7 +281,7 @@ public class RestExceptionHandler {
 
     log.with("validation_errors", errors)
         .with("source_message", ex.getSourceMessage())
-        .error("Unhandled InvalidRequestException", ex);
+        .warn("Unhandled InvalidRequestException");
     CTPException ourException =
         new CTPException(CTPException.Fault.VALIDATION_FAILED, INVALID_JSON);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);
@@ -298,7 +298,7 @@ public class RestExceptionHandler {
   public ResponseEntity<?> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
     String message = createCleanedUpErrorMessage(ex);
-    log.info("Uncaught HttpMessageNotReadableException. " + message);
+    log.warn("Uncaught HttpMessageNotReadableException. {}", message);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
 
@@ -318,7 +318,7 @@ public class RestExceptionHandler {
       MethodArgumentNotValidException ex) {
     String message = createCleanedUpErrorMessage(ex);
     log.with("parameter", ex.getParameter().getParameterName())
-        .info("Uncaught MethodArgumentNotValidException. " + message);
+        .warn("Uncaught MethodArgumentNotValidException. {}", message);
 
     CTPException ourException = new CTPException(CTPException.Fault.VALIDATION_FAILED, message);
     return new ResponseEntity<>(ourException, HttpStatus.BAD_REQUEST);

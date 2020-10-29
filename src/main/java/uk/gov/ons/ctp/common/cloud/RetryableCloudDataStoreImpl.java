@@ -39,7 +39,7 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
       retrier.store(schema, key, value);
     } catch (DataStoreContentionException e) {
       String identity = value.getClass().getSimpleName() + ": " + id;
-      log.error("Retries exhausted for storage of {}", identity);
+      log.error(e, "Retries exhausted for storage of {}", identity);
       throw new CTPException(Fault.SYSTEM_ERROR, e, "Retries exhausted for storage of " + identity);
     }
   }

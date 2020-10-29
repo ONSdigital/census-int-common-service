@@ -103,7 +103,7 @@ public class YmlConfigReader {
 
   // Get Jackson to read YML file
   private JsonNode readYmlFile(String resourcePath) throws CTPException {
-    log.debug("Reading yml file from '" + resourcePath + "'");
+    log.debug("Reading yml file from '{}'", resourcePath);
 
     JsonNode config;
 
@@ -113,7 +113,7 @@ public class YmlConfigReader {
       config = mapper.readTree(rabbitConfigStream);
     } catch (IOException e) {
       String errorMessage = "Failed to read contents of configuration file: " + resourcePath;
-      log.error(errorMessage);
+      log.error(errorMessage, e);
       throw new CTPException(Fault.SYSTEM_ERROR, e, errorMessage);
     }
 
