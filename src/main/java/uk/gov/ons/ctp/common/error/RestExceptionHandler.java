@@ -61,7 +61,7 @@ public class RestExceptionHandler {
       case NOT_FOUND:
         log.with("fault", exception.getFault())
             .with("message", exception.getMessage())
-            .warn("Handling CTPException - The resource was not found");
+            .warn("Handling CTPException - Resource not found");
         break;
       case BAD_REQUEST:
         log.with("fault", exception.getFault())
