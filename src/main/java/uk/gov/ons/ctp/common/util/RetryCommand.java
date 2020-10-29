@@ -76,12 +76,12 @@ public class RetryCommand<T> {
           retryCount++;
           log.with("retry_count", retryCount)
               .with("max_retries", maxRetries)
-              .info("FAILED - Command failed on retry", ex);
+              .warn("FAILED - Command failed on retry");
 
           if (retryCount >= maxRetries) {
             log.with("retry_count", retryCount)
                 .with("max_retries", maxRetries)
-                .warn(MAX_RETRIES_EXCEEDED);
+                .error(MAX_RETRIES_EXCEEDED, ex);
             throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, MAX_RETRIES_EXCEEDED);
           }
 
@@ -92,7 +92,7 @@ public class RetryCommand<T> {
                 "Unexpected retry pause interrupted, in the interests of resilience, carrying on.");
           }
         } else {
-          log.info(ERROR_HANDLER_ERROR, ex);
+          log.error(ERROR_HANDLER_ERROR, ex);
           throw new CTPException(CTPException.Fault.SYSTEM_ERROR, ex, ERROR_HANDLER_ERROR);
         }
       }
