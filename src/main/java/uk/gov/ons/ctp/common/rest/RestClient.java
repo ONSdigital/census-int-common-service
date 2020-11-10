@@ -7,6 +7,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +42,7 @@ public class RestClient {
   private HttpStatus httpDefaultStatus;
 
   private static Map<HttpStatus, HttpStatus> defaultBareBonesErrorMapping;
+  private static final Logger logging = LoggerFactory.getLogger(RestClient.class);
 
   static {
     defaultBareBonesErrorMapping = new HashMap<HttpStatus, HttpStatus>();
@@ -174,43 +178,38 @@ public class RestClient {
     HttpEntity<P> httpEntity = createHttpEntity(objToSend, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
     ResponseEntity<T> response;
+    String errorMessage = "request failed for the given path";
     try {
       response = restTemplate.exchange(uriComponents.toUri(), method, httpEntity, clazz);
     } catch (HttpStatusCodeException e) {
       // Failure detected. For 4xx and 5xx status codes
-      String errorMessage =
-          method.name()
-              + " request failed for path: '"
-              + uriComponents
-              + "' Status: "
-              + e.getStatusCode()
-              + " ResponseBody: '"
-              + e.getResponseBodyAsString()
-              + "'";
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-        log.warn(errorMessage);
+        logging.with("path", path)
+                .with("methodName", method.name())
+                .with("uriComponents", uriComponents)
+                .with("Status", e.getStatusCode())
+                .with("ResponseBody", e.getResponseBodyAsString()).warn(errorMessage);
       } else if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         // Caller expected to handle this situation
         log.info("Too many requests response on {} for path: {}", method.name(), path);
       } else {
-        log.error(errorMessage, e);
+        logging.with("path", path)
+      .with("methodName", method.name())
+                .with("uriComponents", uriComponents).error(errorMessage, e);
       }
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
     } catch (RestClientException e) {
-      log.error(method.name() + " failed for path: '" + uriComponents + "'", e);
       throw new ResponseStatusException(
           HttpStatus.INTERNAL_SERVER_ERROR, "Internal processing error");
     }
 
     T responseObject = response.getBody();
     if (responseObject == null) {
-      String errorMessage =
-          "Empty body returned for path '"
-              + uriComponents.toUriString()
-              + "'. Status code: "
-              + response.getStatusCode();
-      log.error(errorMessage);
+      errorMessage = "Empty body returned for given path";
+      logging.with("path", path)
+              .with("methodName", method.name())
+              .with("uriComponents", uriComponents).error(errorMessage);
       throw new ResponseStatusException(
           mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
     }
