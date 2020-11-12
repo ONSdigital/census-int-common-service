@@ -183,6 +183,7 @@ public class RestClient {
     } catch (HttpStatusCodeException e) {
       // Failure detected. For 4xx and 5xx status codes
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+        errorMessage = "dealing with NOT_FOUND";
         logging
             .with("path", path)
             .with("methodName", method.name())
@@ -215,6 +216,8 @@ public class RestClient {
           .with("path", path)
           .with("methodName", method.name())
           .with("uriComponents", uriComponents)
+          .with("statusCode", response.getStatusCode())
+          .with("responseBody", response.getBody())
           .error(errorMessage);
       throw new ResponseStatusException(
           mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
