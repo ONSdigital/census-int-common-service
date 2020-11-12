@@ -199,7 +199,10 @@ public class RestClient {
             .with("path", path)
             .with("methodName", method.name())
             .with("uriComponents", uriComponents)
-            .error(errorMessage, e);
+            .with("statusCode", e.getStatusCode())
+            .with("responseBody", e.getResponseBodyAsString())
+            .error(errorMessage);
+        logging.debug(errorMessage, e);
       }
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
