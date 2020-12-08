@@ -55,7 +55,7 @@ public class FirestoreDataStore implements CloudDataStore {
   @Override
   public void storeObject(final String schema, final String key, final Object value)
       throws CTPException, DataStoreContentionException {
-    log.with(schema).with(key).debug("Saving object to Firestore");
+    log.with(schema).with(key).info("Saving object to Firestore");
 
     // Store the object
     ApiFuture<WriteResult> result = firestore.collection(schema).document(key).set(value);
@@ -63,7 +63,7 @@ public class FirestoreDataStore implements CloudDataStore {
     // Wait for Firestore to complete
     try {
       result.get();
-      log.with(schema).with(key).debug("Firestore save completed");
+      log.with(schema).with(key).info("Firestore save completed");
 
     } catch (Exception e) {
       log.with("schema", schema)
@@ -146,7 +146,7 @@ public class FirestoreDataStore implements CloudDataStore {
   public <T> Optional<T> retrieveObject(Class<T> target, final String schema, final String key)
       throws CTPException {
 
-    log.with("schema", schema).with("key", key).debug("Fetching object from Firestore");
+    log.with("schema", schema).with("key", key).info("Fetching object from Firestore");
 
     // Submit read request to firestore
     FieldPath fieldPathForId = FieldPath.documentId();
@@ -159,7 +159,9 @@ public class FirestoreDataStore implements CloudDataStore {
       log.debug("Search didn't find any objects");
     } else if (documents.size() == 1) {
       result = Optional.of(documents.get(0));
-      log.debug("Search found single result");
+      log.with("schema", schema)
+          .with("key", key)
+    .info("Search found single result");
     } else {
       log.with("results.size", documents.size())
           .with("schema", schema)
@@ -249,7 +251,7 @@ public class FirestoreDataStore implements CloudDataStore {
    */
   @Override
   public void deleteObject(final String schema, final String key) throws CTPException {
-    log.with("schema", schema).with("key", key).debug("Deleting object from Firestore");
+    log.with("schema", schema).with("key", key).info("Deleting object from Firestore");
 
     // Tell firestore to delete object
     DocumentReference docRef = firestore.collection(schema).document(key);
@@ -258,7 +260,9 @@ public class FirestoreDataStore implements CloudDataStore {
     // Wait for delete to complete
     try {
       result.get();
-      log.debug("Firestore delete completed");
+      log.with("schema", schema)
+    .with("key", key)
+    .info("Firestore delete completed");
     } catch (Exception e) {
       log.with("schema", schema)
           .with("key", key)
