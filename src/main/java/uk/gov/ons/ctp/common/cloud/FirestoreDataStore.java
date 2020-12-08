@@ -55,7 +55,7 @@ public class FirestoreDataStore implements CloudDataStore {
   @Override
   public void storeObject(final String schema, final String key, final Object value)
       throws CTPException, DataStoreContentionException {
-    log.with(schema).with(key).info("Saving object to Firestore");
+    log.with("schema", schema).with("key", key).info("Saving object to Firestore");
 
     // Store the object
     ApiFuture<WriteResult> result = firestore.collection(schema).document(key).set(value);
@@ -63,7 +63,7 @@ public class FirestoreDataStore implements CloudDataStore {
     // Wait for Firestore to complete
     try {
       result.get();
-      log.with(schema).with(key).info("Firestore save completed");
+      log.with("schema", schema).with("key", schema).info("Firestore save completed");
 
     } catch (Exception e) {
       log.with("schema", schema)
