@@ -159,9 +159,7 @@ public class FirestoreDataStore implements CloudDataStore {
       log.debug("Search didn't find any objects");
     } else if (documents.size() == 1) {
       result = Optional.of(documents.get(0));
-      log.with("schema", schema)
-          .with("key", key)
-    .info("Search found single result");
+      log.with("schema", schema).with("key", key).info("Search found single result");
     } else {
       log.with("results.size", documents.size())
           .with("schema", schema)
@@ -260,9 +258,7 @@ public class FirestoreDataStore implements CloudDataStore {
     // Wait for delete to complete
     try {
       result.get();
-      log.with("schema", schema)
-    .with("key", key)
-    .info("Firestore delete completed");
+      log.with("schema", schema).with("key", key).info("Firestore delete completed");
     } catch (Exception e) {
       log.with("schema", schema)
           .with("key", key)
