@@ -63,7 +63,7 @@ public class FirestoreDataStore implements CloudDataStore {
     // Wait for Firestore to complete
     try {
       result.get();
-      log.with("schema", schema).with("key", schema).info("Firestore save completed");
+      log.with("schema", schema).with("key", key).info("Firestore save completed");
 
     } catch (Exception e) {
       log.with("schema", schema)
