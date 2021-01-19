@@ -15,4 +15,7 @@ public class RestClientConfig {
   @Builder.Default private String port = "8080";
   private String username;
   private String password;
+  
+  private int connectionManagerDefaultMaxPerRoute = 20;
+  private int connectionManagerMaxTotal = 50;
 }
