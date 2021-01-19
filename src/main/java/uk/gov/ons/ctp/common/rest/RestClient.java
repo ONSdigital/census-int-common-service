@@ -1,5 +1,7 @@
 package uk.gov.ons.ctp.common.rest;
 
+import com.godaddy.logging.Logger;
+import com.godaddy.logging.LoggerFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +9,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -25,9 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A convenience class that wraps the Spring RestTemplate and eases its use around the typing,
@@ -92,15 +92,16 @@ public class RestClient {
     connectionManager.setDefaultMaxPerRoute(config.getConnectionManagerDefaultMaxPerRoute());
     connectionManager.setMaxTotal(config.getConnectionManagerDefaultMaxPerRoute());
 
-    HttpClient httpClient = HttpClientBuilder.create()
-        .setConnectionManager(connectionManager)
-        .build();
+    HttpClient httpClient =
+        HttpClientBuilder.create().setConnectionManager(connectionManager).build();
 
     restTemplate = new RestTemplate(clientHttpRequestFactory(httpClient, config));
   }
 
-  private ClientHttpRequestFactory clientHttpRequestFactory(HttpClient httpClient, RestClientConfig clientConfig) {
-    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+  private ClientHttpRequestFactory clientHttpRequestFactory(
+      HttpClient httpClient, RestClientConfig clientConfig) {
+    HttpComponentsClientHttpRequestFactory factory =
+        new HttpComponentsClientHttpRequestFactory(httpClient);
     // set the timeout when establishing a connection
     // factory.setConnectTimeout(clientConfig.getConnectTimeoutMilliSeconds());
     // set the timeout when reading the response from a request

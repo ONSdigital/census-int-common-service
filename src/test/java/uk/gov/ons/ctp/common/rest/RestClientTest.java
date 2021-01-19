@@ -115,6 +115,8 @@ public class RestClientTest {
             .scheme("http")
             .host("phil.whiles.for.president.com")
             .port("80")
+            .connectionManagerDefaultMaxPerRoute(4)
+            .connectionManagerMaxTotal(11)
             .build();
     RestClient restClient = new RestClient(config);
     restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
@@ -174,7 +176,7 @@ public class RestClientTest {
 
     // Setup the client to error mapping that should not be used
     RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
+        RestClientConfig.builder().scheme("http").host("localhost").port("8080").connectionManagerDefaultMaxPerRoute(4).connectionManagerMaxTotal(11).build();
     Map<HttpStatus, HttpStatus> errorMappings =
         Map.of(HttpStatus.HTTP_VERSION_NOT_SUPPORTED, HttpStatus.I_AM_A_TEAPOT);
     RestClient restClient = new RestClient(config, errorMappings, defaultHttpStatus);
@@ -205,7 +207,7 @@ public class RestClientTest {
   @Test
   public void testGetResourceFailsWithMappedError() {
     RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
+        RestClientConfig.builder().scheme("http").host("localhost").port("8080").connectionManagerDefaultMaxPerRoute(4).connectionManagerMaxTotal(11).build();
     Map<HttpStatus, HttpStatus> errorMappings =
         Map.of(HttpStatus.CONFLICT, HttpStatus.I_AM_A_TEAPOT);
     RestClient restClient = new RestClient(config, errorMappings, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -274,7 +276,7 @@ public class RestClientTest {
 
   private void mockRequest(HttpStatus responseStatus, HttpStatus mapStatus, boolean cause) {
     RestClientConfig config =
-        RestClientConfig.builder().scheme("http").host("localhost").port("8080").build();
+        RestClientConfig.builder().scheme("http").host("localhost").port("8080").connectionManagerDefaultMaxPerRoute(4).connectionManagerMaxTotal(11).build();
     RestClient restClient = new RestClient(config);
     RestTemplate restTemplate = restClient.getRestTemplate();
 
