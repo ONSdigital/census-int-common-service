@@ -194,11 +194,13 @@ public class FirestoreDataStore implements CloudDataStore {
   public <T> List<T> search(
       Class<T> target, final String schema, String[] fieldPathElements, String searchValue)
       throws CTPException {
-    log.with(schema)
-        .with(fieldPathElements)
-        .with(searchValue)
-        .with(target)
-        .debug("Searching Firestore");
+    if (log.isDebugEnabled()) {
+      log.with(schema)
+          .with(fieldPathElements)
+          .with(searchValue)
+          .with(target)
+          .debug("Searching Firestore");
+    }
 
     // Run a query for a custom search path
     FieldPath fieldPath = FieldPath.of(fieldPathElements);

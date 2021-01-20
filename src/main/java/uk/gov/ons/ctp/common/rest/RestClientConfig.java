@@ -16,6 +16,6 @@ public class RestClientConfig {
   private String username;
   private String password;
 
-  private int connectionManagerDefaultMaxPerRoute = 20;
-  private int connectionManagerMaxTotal = 50;
+  @Builder.Default private int connectionManagerDefaultMaxPerRoute = 20;
+  @Builder.Default private int connectionManagerMaxTotal = 50;
 }

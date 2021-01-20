@@ -21,13 +21,18 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import uk.gov.ons.ctp.common.error.CTPException;
 
 /** Test the RestClient class */
 public class RestClientTest {
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testPutResourceOk() {
+  public void testPutResourceOk() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -47,9 +52,10 @@ public class RestClientTest {
 
   /*
    * A test
+   * @throws CTPException
    */
   @Test
-  public void testPostResourceOk() {
+  public void testPostResourceOk() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -68,7 +74,7 @@ public class RestClientTest {
   }
 
   @Test
-  public void testPostResource_StringResponse() {
+  public void testPostResource_StringResponse() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -85,7 +91,7 @@ public class RestClientTest {
   }
 
   @Test
-  public void testPostResource_NullResponse() {
+  public void testPostResource_NullResponse() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -107,9 +113,13 @@ public class RestClientTest {
     assertTrue(exception.getMessage(), exception.getMessage().contains("No response"));
   }
 
-  /** Test that we get a failure when we ask for a connection to a non resolvable host */
+  /**
+   * Test that we get a failure when we ask for a connection to a non resolvable host
+   *
+   * @throws CTPException
+   */
   @Test(expected = ResponseStatusException.class)
-  public void testGetTimeoutURLInvalid() {
+  public void testGetTimeoutURLInvalid() throws CTPException {
     RestClientConfig config =
         RestClientConfig.builder()
             .scheme("http")
@@ -122,9 +132,13 @@ public class RestClientTest {
     restClient.getResource("/hairColor/blue/shoeSize/10", FakeDTO.class);
   }
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testGetResourceOk() {
+  public void testGetResourceOk() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -143,9 +157,13 @@ public class RestClientTest {
     mockServer.verify();
   }
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testGetResourceFailsWithInvalidJsonResponse() {
+  public void testGetResourceFailsWithInvalidJsonResponse() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -169,9 +187,11 @@ public class RestClientTest {
   /**
    * A test in which the fake service responds with an error status, but that status is not remapped
    * as there is no matching entry in the mapping table.
+   *
+   * @throws CTPException
    */
   @Test
-  public void testGetResourceFailsWithUnmappedError() {
+  public void testGetResourceFailsWithUnmappedError() throws CTPException {
     HttpStatus defaultHttpStatus = HttpStatus.CHECKPOINT;
 
     // Setup the client to error mapping that should not be used
@@ -209,9 +229,11 @@ public class RestClientTest {
   /**
    * A test in which the fake service fails, as it does in the previous test, but this time the
    * RestClient should match an error mapping rule
+   *
+   * @throws CTPException
    */
   @Test
-  public void testGetResourceFailsWithMappedError() {
+  public void testGetResourceFailsWithMappedError() throws CTPException {
     RestClientConfig config =
         RestClientConfig.builder()
             .scheme("http")
@@ -243,9 +265,13 @@ public class RestClientTest {
     }
   }
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testGetResourcesOk() {
+  public void testGetResourcesOk() throws CTPException {
     RestClient restClient = new RestClient();
     RestTemplate restTemplate = restClient.getRestTemplate();
 
@@ -264,29 +290,46 @@ public class RestClientTest {
     mockServer.verify();
   }
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testGetResourceNotFound() {
+  public void testGetResourceNotFound() throws CTPException {
     mockRequest(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND, true);
   }
 
-  /** A test */
-  public void testGetResourcesNoContent() {
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
+  public void testGetResourcesNoContent() throws CTPException {
     mockRequest(HttpStatus.NO_CONTENT, HttpStatus.INTERNAL_SERVER_ERROR, false);
   }
 
-  /** A test */
-  public void testGetResourcesReallyNotOk() {
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
+  public void testGetResourcesReallyNotOk() throws CTPException {
     mockRequest(HttpStatus.BAD_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR, true);
   }
 
-  /** A test */
+  /**
+   * A test
+   *
+   * @throws CTPException
+   */
   @Test
-  public void testGetResourcesUnauthorized() {
+  public void testGetResourcesUnauthorized() throws CTPException {
     mockRequest(HttpStatus.UNAUTHORIZED, HttpStatus.INTERNAL_SERVER_ERROR, true);
   }
 
-  private void mockRequest(HttpStatus responseStatus, HttpStatus mapStatus, boolean cause) {
+  private void mockRequest(HttpStatus responseStatus, HttpStatus mapStatus, boolean cause)
+      throws CTPException {
     RestClientConfig config =
         RestClientConfig.builder()
             .scheme("http")
