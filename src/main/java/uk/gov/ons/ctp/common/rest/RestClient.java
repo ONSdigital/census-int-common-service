@@ -134,7 +134,7 @@ public class RestClient {
       SSLConnectionSocketFactory socketFactory =
           new SSLConnectionSocketFactory(
               SSLContext.getDefault(),
-              new String[] {"TLSv1.2"},
+              new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"},
               null,
               SSLConnectionSocketFactory.getDefaultHostnameVerifier());
       Registry<ConnectionSocketFactory> registry =
