@@ -18,4 +18,11 @@ public class RestClientConfig {
 
   @Builder.Default private int connectionManagerDefaultMaxPerRoute = 20;
   @Builder.Default private int connectionManagerMaxTotal = 50;
+
+  // Timeout value for establishing a connection with the destination server
+  @Builder.Default private int connectTimeoutMillis = 0;
+  // Timeout for getting a connection from the connection manager
+  @Builder.Default private int connectionRequestTimeoutMillis = 0;
+  // Maximum time to wait between data packets
+  @Builder.Default private int socketTimeoutMillis = 0;
 }

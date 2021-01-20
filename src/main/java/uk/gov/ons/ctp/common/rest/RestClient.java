@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -115,15 +116,22 @@ public class RestClient {
             + " MaxTotal="
             + config.getConnectionManagerMaxTotal());
 
+    // Set http timeouts. Use '0' to disable and wait for an infinite amount of time
+    RequestConfig requestConfig =
+        RequestConfig.custom()
+            .setConnectTimeout(config.getConnectTimeoutMillis())
+            .setConnectionRequestTimeout(config.getConnectionRequestTimeoutMillis())
+            .setSocketTimeout(config.getSocketTimeoutMillis())
+            .build();
+
     HttpClient httpClient =
-        HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+        HttpClientBuilder.create()
+            .setDefaultRequestConfig(requestConfig)
+            .setConnectionManager(connectionManager)
+            .build();
 
     ClientHttpRequestFactory httpRequestFactory =
         new HttpComponentsClientHttpRequestFactory(httpClient);
-    // set the timeout when establishing a connection
-    // httpRequestFactory.setConnectTimeout(clientConfig.getConnectTimeoutMilliSeconds());
-    // set the timeout when reading the response from a request
-    // httpRequestFactory.setReadTimeout(clientConfig.getReadTimeoutMilliSeconds());
 
     restTemplate = new RestTemplate(httpRequestFactory);
   }
