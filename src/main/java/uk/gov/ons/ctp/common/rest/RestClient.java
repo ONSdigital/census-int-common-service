@@ -145,7 +145,7 @@ public class RestClient {
 
       return new PoolingHttpClientConnectionManager(registry);
     } catch (NoSuchAlgorithmException e) {
-      // Logger.getLogger(HttpClientUtils.class.getName()).log(Level.SEVERE, null, ex);
+      log.error("Failed to create SSL connection factory", e);
       throw new CTPException(Fault.SYSTEM_ERROR, e);
     }
   }
