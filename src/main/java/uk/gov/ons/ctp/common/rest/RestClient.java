@@ -110,10 +110,9 @@ public class RestClient {
     log.info(
         "Setting ConnectionManagerLimits for "
             + config.getHost()
-            + ". "
-            + "DefaultMaxPerRoute="
+            + " DefaultMaxPerRoute="
             + config.getConnectionManagerDefaultMaxPerRoute()
-            + "MaxTotal="
+            + " MaxTotal="
             + config.getConnectionManagerMaxTotal());
 
     HttpClient httpClient =
