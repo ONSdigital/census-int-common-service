@@ -106,7 +106,7 @@ public class YmlConfigReader {
     if (log.isDebugEnabled()) {
       log.debug("Reading yml file from '{}'", resourcePath);
     }
-    
+
     JsonNode config;
 
     try (InputStream rabbitConfigStream =

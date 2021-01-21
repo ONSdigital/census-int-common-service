@@ -234,7 +234,7 @@ public class RestClient {
     if (log.isDebugEnabled()) {
       log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
     }
-    
+
     // Issue http request to other service
     HttpEntity<P> httpEntity = createHttpEntity(objToSend, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
@@ -293,7 +293,7 @@ public class RestClient {
     if (log.isDebugEnabled()) {
       log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
     }
-    
+
     return responseObject;
   }
 
@@ -336,7 +336,7 @@ public class RestClient {
     if (log.isDebugEnabled()) {
       log.debug("Enter getResources for path : {}", path);
     }
-    
+
     T[] responseArray = getResource(path, clazz, headerParams, queryParams, pathParams);
 
     List<T> responseList = new ArrayList<T>();

@@ -210,7 +210,7 @@ public class FirestoreDataStore implements CloudDataStore {
     if (log.isDebugEnabled()) {
       log.with("resultSize", r.size()).debug("Firestore search returning results");
     }
-    
+
     return r;
   }
 
