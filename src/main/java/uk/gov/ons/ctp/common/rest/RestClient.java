@@ -231,8 +231,10 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws ResponseStatusException {
-    log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
-
+    if (log.isDebugEnabled()) {
+      log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
+    }
+    
     // Issue http request to other service
     HttpEntity<P> httpEntity = createHttpEntity(objToSend, headerParams);
     UriComponents uriComponents = createUriComponents(path, queryParams, pathParams);
@@ -262,7 +264,9 @@ public class RestClient {
             .with("statusCode", e.getStatusCode())
             .with("responseBody", e.getResponseBodyAsString())
             .error(errorMessage);
-        logging.debug(errorMessage, e);
+        if (log.isDebugEnabled()) {
+          logging.debug(errorMessage, e);
+        }
       }
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
@@ -286,8 +290,10 @@ public class RestClient {
           mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
     }
 
-    log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
-
+    if (log.isDebugEnabled()) {
+      log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
+    }
+    
     return responseObject;
   }
 
@@ -327,8 +333,10 @@ public class RestClient {
       Object... pathParams)
       throws ResponseStatusException {
 
-    log.debug("Enter getResources for path : {}", path);
-
+    if (log.isDebugEnabled()) {
+      log.debug("Enter getResources for path : {}", path);
+    }
+    
     T[] responseArray = getResource(path, clazz, headerParams, queryParams, pathParams);
 
     List<T> responseList = new ArrayList<T>();

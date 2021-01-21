@@ -75,7 +75,9 @@ public class RetryableCloudDataStoreImpl implements RetryableCloudDataStore {
    */
   @Recover
   public void doRecover(Exception e) throws Exception {
-    log.with(e.getMessage()).debug("Datastore recovery throwing exception");
+    if (log.isDebugEnabled()) {
+      log.with(e.getMessage()).debug("Datastore recovery throwing exception");
+    }
     throw e;
   }
 
