@@ -156,7 +156,9 @@ public class FirestoreDataStore implements CloudDataStore {
     Optional<T> result = null;
     if (documents.isEmpty()) {
       result = Optional.empty();
-      log.debug("Search didn't find any objects");
+      if (log.isDebugEnabled()) {
+        log.debug("Search didn't find any objects");
+      }
     } else if (documents.size() == 1) {
       result = Optional.of(documents.get(0));
       log.with("schema", schema).with("key", key).info("Search found single result");
@@ -194,16 +196,20 @@ public class FirestoreDataStore implements CloudDataStore {
   public <T> List<T> search(
       Class<T> target, final String schema, String[] fieldPathElements, String searchValue)
       throws CTPException {
-    log.with(schema)
-        .with(fieldPathElements)
-        .with(searchValue)
-        .with(target)
-        .debug("Searching Firestore");
+    if (log.isDebugEnabled()) {
+      log.with(schema)
+          .with(fieldPathElements)
+          .with(searchValue)
+          .with(target)
+          .debug("Searching Firestore");
+    }
 
     // Run a query for a custom search path
     FieldPath fieldPath = FieldPath.of(fieldPathElements);
     List<T> r = runSearch(target, schema, fieldPath, searchValue);
-    log.with("resultSize", r.size()).debug("Firestore search returning results");
+    if (log.isDebugEnabled()) {
+      log.with("resultSize", r.size()).debug("Firestore search returning results");
+    }
 
     return r;
   }

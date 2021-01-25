@@ -3,13 +3,24 @@ package uk.gov.ons.ctp.common.rest;
 import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.SSLContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,6 +36,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.ons.ctp.common.error.CTPException;
+import uk.gov.ons.ctp.common.error.CTPException.Fault;
 
 /**
  * A convenience class that wraps the Spring RestTemplate and eases its use around the typing,
@@ -49,8 +62,12 @@ public class RestClient {
     defaultBareBonesErrorMapping.put(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND);
   }
 
-  /** Construct with no details of the server - will use the default RestClientConfig provides */
-  public RestClient() {
+  /**
+   * Construct with no details of the server - will use the default RestClientConfig provides
+   *
+   * @throws CTPException
+   */
+  public RestClient() throws CTPException {
     this(new RestClientConfig());
   }
 
@@ -58,8 +75,9 @@ public class RestClient {
    * Constructor which uses no error code mappings.
    *
    * @param clientConfig contains data on how to connect to another service.
+   * @throws CTPException
    */
-  public RestClient(RestClientConfig clientConfig) {
+  public RestClient(RestClientConfig clientConfig) throws CTPException {
     this(clientConfig, defaultBareBonesErrorMapping, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -73,28 +91,70 @@ public class RestClient {
    *     translation.
    * @param httpDefaultStatus if the called service returns a http code which is not in the mapping
    *     table then this value will be used.
+   * @throws CTPException
    */
   public RestClient(
       RestClientConfig clientConfig,
       Map<HttpStatus, HttpStatus> httpErrorMapping,
-      HttpStatus httpDefaultStatus) {
+      HttpStatus httpDefaultStatus)
+      throws CTPException {
     this.config = clientConfig;
     this.httpErrorMapping = httpErrorMapping;
     this.httpDefaultStatus = httpDefaultStatus;
     init();
   }
 
-  public void init() {
-    restTemplate = new RestTemplate(clientHttpRequestFactory(config));
+  public void init() throws CTPException {
+    PoolingHttpClientConnectionManager connectionManager = createConnectionManager();
+    connectionManager.setDefaultMaxPerRoute(config.getConnectionManagerDefaultMaxPerRoute());
+    connectionManager.setMaxTotal(config.getConnectionManagerMaxTotal());
+    log.info(
+        "Setting ConnectionManagerLimits for "
+            + config.getHost()
+            + " DefaultMaxPerRoute="
+            + config.getConnectionManagerDefaultMaxPerRoute()
+            + " MaxTotal="
+            + config.getConnectionManagerMaxTotal());
+
+    // Set http timeouts. Use '0' to disable and wait for an infinite amount of time
+    RequestConfig requestConfig =
+        RequestConfig.custom()
+            .setConnectTimeout(config.getConnectTimeoutMillis())
+            .setConnectionRequestTimeout(config.getConnectionRequestTimeoutMillis())
+            .setSocketTimeout(config.getSocketTimeoutMillis())
+            .build();
+
+    HttpClient httpClient =
+        HttpClientBuilder.create()
+            .setDefaultRequestConfig(requestConfig)
+            .setConnectionManager(connectionManager)
+            .build();
+
+    ClientHttpRequestFactory httpRequestFactory =
+        new HttpComponentsClientHttpRequestFactory(httpClient);
+
+    restTemplate = new RestTemplate(httpRequestFactory);
   }
 
-  private ClientHttpRequestFactory clientHttpRequestFactory(RestClientConfig clientConfig) {
-    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-    // set the timeout when establishing a connection
-    // factory.setConnectTimeout(clientConfig.getConnectTimeoutMilliSeconds());
-    // set the timeout when reading the response from a request
-    // factory.setReadTimeout(clientConfig.getReadTimeoutMilliSeconds());
-    return factory;
+  private PoolingHttpClientConnectionManager createConnectionManager() throws CTPException {
+    try {
+      SSLConnectionSocketFactory socketFactory =
+          new SSLConnectionSocketFactory(
+              SSLContext.getDefault(),
+              new String[] {"TLSv1", "TLSv1.1", "TLSv1.2"},
+              null,
+              SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+      Registry<ConnectionSocketFactory> registry =
+          RegistryBuilder.<ConnectionSocketFactory>create()
+              .register("http", PlainConnectionSocketFactory.INSTANCE)
+              .register("https", socketFactory)
+              .build();
+
+      return new PoolingHttpClientConnectionManager(registry);
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to create SSL connection factory", e);
+      throw new CTPException(Fault.SYSTEM_ERROR, e);
+    }
   }
 
   /**
@@ -102,7 +162,7 @@ public class RestClient {
    *
    * @return the underlying template
    */
-  public RestTemplate getRestTemplate() {
+  RestTemplate getRestTemplate() {
     return this.restTemplate;
   }
 
@@ -171,7 +231,9 @@ public class RestClient {
       MultiValueMap<String, String> queryParams,
       Object... pathParams)
       throws ResponseStatusException {
-    log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
+    if (log.isDebugEnabled()) {
+      log.debug("Enter doHttpOperation {} for path: {}", method.name(), path);
+    }
 
     // Issue http request to other service
     HttpEntity<P> httpEntity = createHttpEntity(objToSend, headerParams);
@@ -202,7 +264,9 @@ public class RestClient {
             .with("statusCode", e.getStatusCode())
             .with("responseBody", e.getResponseBodyAsString())
             .error(errorMessage);
-        logging.debug(errorMessage, e);
+        if (log.isDebugEnabled()) {
+          logging.debug(errorMessage, e);
+        }
       }
       throw new ResponseStatusException(
           mapToExternalStatus(e.getStatusCode()), e.getResponseBodyAsString(), e);
@@ -226,7 +290,9 @@ public class RestClient {
           mapToExternalStatus(response.getStatusCode()), "Internal processing error. No response.");
     }
 
-    log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
+    if (log.isDebugEnabled()) {
+      log.debug("Exit doHttpOperation {} for path: {}", method.name(), path);
+    }
 
     return responseObject;
   }
@@ -267,7 +333,9 @@ public class RestClient {
       Object... pathParams)
       throws ResponseStatusException {
 
-    log.debug("Enter getResources for path : {}", path);
+    if (log.isDebugEnabled()) {
+      log.debug("Enter getResources for path : {}", path);
+    }
 
     T[] responseArray = getResource(path, clazz, headerParams, queryParams, pathParams);
 

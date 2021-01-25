@@ -103,7 +103,9 @@ public class YmlConfigReader {
 
   // Get Jackson to read YML file
   private JsonNode readYmlFile(String resourcePath) throws CTPException {
-    log.debug("Reading yml file from '{}'", resourcePath);
+    if (log.isDebugEnabled()) {
+      log.debug("Reading yml file from '{}'", resourcePath);
+    }
 
     JsonNode config;
 
@@ -159,14 +161,16 @@ public class YmlConfigReader {
       // Update value of node
       String replacementValue = envVariables.get(pathToNode);
       JsonNode currentValue = objectNode.get(nodeName);
-      log.debug(
-          "Updating value of node '"
-              + pathToNode
-              + "' from '"
-              + currentValue.asText()
-              + "' to '"
-              + replacementValue
-              + "'");
+      if (log.isDebugEnabled()) {
+        log.debug(
+            "Updating value of node '"
+                + pathToNode
+                + "' from '"
+                + currentValue.asText()
+                + "' to '"
+                + replacementValue
+                + "'");
+      }
       objectNode.put(nodeName, replacementValue);
     }
   }

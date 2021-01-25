@@ -15,7 +15,9 @@ public class CloudRetryListener extends RetryListenerSupport {
   public <T, E extends Throwable> void onError(
       RetryContext context, RetryCallback<T, E> callback, Throwable throwable) {
     Object operationName = context.getAttribute(RetryContext.NAME);
-    log.debug("{}: Retry failed", operationName);
+    if (log.isDebugEnabled()) {
+      log.debug("{}: Retry failed", operationName);
+    }
   }
 
   @Override
