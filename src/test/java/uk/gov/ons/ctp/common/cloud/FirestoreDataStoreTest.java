@@ -76,9 +76,18 @@ public class FirestoreDataStoreTest extends CloudTestBase {
   }
 
   @Test
-  public void testStoreObject_detectsContention() throws Exception {
+  public void testStoreObject_detectsContentionForResourceExhausted() throws Exception {
+    doTestStoreObject_detectsContention(Status.RESOURCE_EXHAUSTED);
+  }
+
+  @Test
+  public void testStoreObject_detectsContentionForAborted() throws Exception {
+    doTestStoreObject_detectsContention(Status.ABORTED);
+  }
+
+  public void doTestStoreObject_detectsContention(Status status) throws Exception {
     // Build chain of exceptions as per Firestore
-    Exception rootCauseException = new StatusRuntimeException(Status.ABORTED);
+    Exception rootCauseException = new StatusRuntimeException(status);
     Exception causeException = new RuntimeException("e2", rootCauseException);
     Exception firestoreException =
         new java.util.concurrent.ExecutionException("e3", causeException);

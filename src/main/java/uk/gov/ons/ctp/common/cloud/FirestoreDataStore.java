@@ -111,7 +111,8 @@ public class FirestoreDataStore implements CloudDataStore {
         StatusRuntimeException statusRuntimeException = (StatusRuntimeException) t;
         Code failureCode = statusRuntimeException.getStatus().getCode();
 
-        if (failureCode == Status.ABORTED.getCode()
+        if (failureCode == Status.RESOURCE_EXHAUSTED.getCode()
+            || failureCode == Status.ABORTED.getCode()
             || failureCode == Status.DEADLINE_EXCEEDED.getCode()
             || failureCode == Status.UNAVAILABLE.getCode()) {
           retryable = true;
