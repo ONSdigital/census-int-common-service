@@ -68,8 +68,13 @@ public enum EstabType {
   }
 
   public static EstabType forCode(String code) {
+    if (code == null) {
+      return EstabType.OTHER;
+    } else {
+      code = code.toUpperCase();
+    }
     for (EstabType estabType : EstabType.values()) {
-      if (estabType.code.equals(code.toUpperCase())) {
+      if (estabType.code.equals(code)) {
         return estabType;
       }
     }
