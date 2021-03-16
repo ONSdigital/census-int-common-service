@@ -46,4 +46,22 @@ public class EstabTypeTest {
     // and that OTHER addressType is empty optional
     assert (otherEstabType.getAddressType().isEmpty());
   }
+
+  @Test
+  public void nullTurnsIntoOther() {
+    EstabType otherEstabType = EstabType.forCode(null);
+    // assert that null yields OTHER
+    assertEquals(EstabType.OTHER, otherEstabType);
+    // and that OTHER addressType is empty optional
+    assert (otherEstabType.getAddressType().isEmpty());
+  }
+
+  @Test
+  public void emptyStringTurnsIntoOther() {
+    EstabType otherEstabType = EstabType.forCode("");
+    // assert that empty String yields OTHER
+    assertEquals(EstabType.OTHER, otherEstabType);
+    // and that OTHER addressType is empty optional
+    assert (otherEstabType.getAddressType().isEmpty());
+  }
 }
