@@ -17,7 +17,7 @@ script:
   - git config --global user.name "Travis CI";
   - if [ "$BRANCH" == "master" ]; then
      if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-      mvn -B release:prepare;
+      mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
       mvn -B release:perform;
      fi
     else
