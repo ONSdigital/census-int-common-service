@@ -48,17 +48,17 @@
     <servers>
         <server>
             <username>integration-ci</username>
-            <password>${env.JFROG_TOKEN}</password>
+            <password>${JFROG_TOKEN}</password>
             <id>releases</id>
         </server>
         <server>
             <username>integration-ci</username>
-            <password>${env.JFROG_TOKEN}</password>
+            <password>${JFROG_TOKEN}</password>
             <id>snapshots</id>
         </server>
         <server>
             <username>integration-ci</username>
-            <password>${env.JFROG_TOKEN}</password>
+            <password>${JFROG_TOKEN}</password>
             <id>central</id>
         </server>
     </servers>
