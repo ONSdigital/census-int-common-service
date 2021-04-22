@@ -15,9 +15,10 @@ script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - git config --global user.email "travis@travis-ci.org";
   - git config --global user.name "Travis CI";
+  - echo -n "$GITHUB_DEPLOY_KEY" | base64 -d > ~/.ssh/id_rsa
   - if [ "$BRANCH" == "master" ]; then
      if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-      mvn -B -Dusername=$GITHUB_API_KEY release:prepare;
+      mvn -B release:prepare;
       mvn -B release:perform;
      fi
     else
