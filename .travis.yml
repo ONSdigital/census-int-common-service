@@ -16,14 +16,12 @@ script:
   - git config --global user.email "travis@travis-ci.org";
   - git config --global user.name "Travis CI";
   - echo -n "$GITHUB_DEPLOY_KEY" | base64 -d > /home/travis/.ssh/id_rsa
-  - echo > ~/.ssh/config << EOF
-Host github.com
-Hostname github.com
-User git
-PubkeyAuthentication yes
-IdentityFile /home/travis/.ssh/id_rsa
-EOF
-  - chmod 600 /home/travis/.ssh/id_rsa
+  - echo "Host github.com" > ~/.ssh/config 
+  - echo "Hostname github.com" >> ~/.ssh/config 
+  - echo "User git" >> ~/.ssh/config 
+  - echo "PubkeyAuthentication yes" >> ~/.ssh/config 
+  - echo "IdentityFile /home/travis/.ssh/id_rsa" >> ~/.ssh/config 
+  - chmod 600 /home/travis/.ssh/id_rsa > ~/.ssh/config 
   - if [ "$BRANCH" == "master" ]; then
      if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       mvn -B release:prepare;
