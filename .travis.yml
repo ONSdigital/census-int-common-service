@@ -15,13 +15,13 @@ script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - git config --global user.email "travis@travis-ci.org";
   - git config --global user.name "Travis CI";
-  - echo -n "$GITHUB_DEPLOY_KEY" | base64 -d > /home/travis/.ssh/github
+  - echo -n "$GITHUB_DEPLOY_KEY" | base64 -d > /home/travis/.ssh/id_rsa
   - echo > ~/.ssh/config << EOF
 Host github.com
 Hostname github.com
 User git
 PubkeyAuthentication yes
-IdentityFile /home/travis/.ssh/github
+IdentityFile /home/travis/.ssh/id_rsa
 EOF
   - chmod 600 /home/travis/.ssh/id_rsa
   - if [ "$BRANCH" == "master" ]; then
