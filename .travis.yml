@@ -21,7 +21,6 @@ script:
       mvn -B release:perform;
      fi
     else
-  - if [ "$BRANCH" != "master" ]; then
       mvn deploy;
     fi
 
